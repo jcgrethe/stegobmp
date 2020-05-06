@@ -6,8 +6,8 @@ import Interfaces.EncriptionBase;
 
 public class ActionFactory {
 
-    private final String ENCRYPT = "-embed";
-    private final String DECRYPT = "-extract";
+    private static final String ENCRYPT = "-embed";
+    private static final String DECRYPT = "-extract";
 
     public EncriptionBase Action(String type)
     {

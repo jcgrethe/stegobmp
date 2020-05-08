@@ -1,13 +1,15 @@
 package Helpers.Factories;
 
+import Helpers.Constant.Constants;
 import Helpers.DecryptHelper;
 import Helpers.EncriptionHelper;
 import Interfaces.EncriptionBase;
 
-public class ActionFactory {
+import static Helpers.Constant.Constants.CosntantsValues.DECRYPT;
+import static Helpers.Constant.Constants.CosntantsValues.ENCRYPT;
 
-    private static final String ENCRYPT = "-embed";
-    private static final String DECRYPT = "-extract";
+
+public class ActionFactory {
 
     public EncriptionBase Action(String type)
     {

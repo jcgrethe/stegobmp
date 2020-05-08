@@ -4,11 +4,9 @@ import Helpers.*;
 import Interfaces.AlgoritmosEsteganografiado;
 import Interfaces.EncriptionBase;
 
-public class AlgorithmsFactory {
+import static Helpers.Constant.Constants.CosntantsValues.*;
 
-    private static final String LSB1 = "LSB1";
-    private static final String LSB4 = "LSB4";
-    private static final String LSBI = "LSBI";
+public class AlgorithmsFactory {
 
     public AlgoritmosEsteganografiado Action(String type)
     {

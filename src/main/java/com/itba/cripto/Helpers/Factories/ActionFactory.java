@@ -1,27 +1,23 @@
 package com.itba.cripto.Helpers.Factories;
 
-import Helpers.Constant.Constants;
-import com.itba.cripto.Helpers.DecryptHelper;
+import com.itba.cripto.Interfaces.EncriptionBase;
 import com.itba.cripto.Helpers.EncriptionHelper;
-import Interfaces.EncriptionBase;
+import com.itba.cripto.Helpers.DecryptHelper;
 
-import static Helpers.Constant.Constants.CosntantsValues.DECRYPT;
-import static Helpers.Constant.Constants.CosntantsValues.ENCRYPT;
+import static com.itba.cripto.Helpers.Constant.Constants.CosntantsValues.*;
+
 
 
 public class ActionFactory {
 
-    public EncriptionBase Action(String type)
-    {
-        if(type.compareTo(ENCRYPT) == 0)
-        {
-            return new EncriptionHelper();
+    public EncriptionBase Action(String type) {
+        switch (type) {
+            case ENCRYPT:
+                return new EncriptionHelper();
+            case DECRYPT:
+                return new DecryptHelper();
+            default:
+                return null;
         }
-        else if(type.compareTo(DECRYPT) == 0)
-        {
-            return new DecryptHelper();
-        }
-        else
-            return null;
     }
 }

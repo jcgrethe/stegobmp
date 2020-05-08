@@ -1,5 +1,10 @@
 package com.itba.cripto.Models;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class FileToEncrypt {
 
     private int LengthFile;
@@ -13,13 +18,4 @@ public class FileToEncrypt {
         this.Extention = extention;
         this.Data = data;
     }
-
-    public int GetLengthFile(){ return this.LengthFile;}
-    public String GetExtention(){ return this.Extention;}
-    public String GetData(){ return this.Data;}
-
-    public void SetLengthFile(int length){  this.LengthFile = length;}
-    public void SetExtention(String extention){  this.Extention = extention;}
-    public void SetData(String data){  this.Data = data;}
-
 }

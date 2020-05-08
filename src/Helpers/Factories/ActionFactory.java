@@ -1,27 +1,21 @@
 package Helpers.Factories;
 
+import Helpers.*;
 import Helpers.Constant.Constants;
-import Helpers.DecryptHelper;
-import Helpers.EncriptionHelper;
 import Interfaces.EncriptionBase;
 
-import static Helpers.Constant.Constants.CosntantsValues.DECRYPT;
-import static Helpers.Constant.Constants.CosntantsValues.ENCRYPT;
+import static Helpers.Constant.Constants.CosntantsValues.*;
 
 
 public class ActionFactory {
 
     public EncriptionBase Action(String type)
     {
-        if(type.compareTo(ENCRYPT) == 0)
+        switch (type)
         {
-            return new EncriptionHelper();
+            case ENCRYPT: return new EncriptionHelper();
+            case DECRYPT: return new DecryptHelper();
+            default: return null;
         }
-        else if(type.compareTo(DECRYPT) == 0)
-        {
-            return new DecryptHelper();
-        }
-        else
-            return null;
     }
 }

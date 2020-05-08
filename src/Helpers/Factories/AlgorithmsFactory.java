@@ -10,19 +10,12 @@ public class AlgorithmsFactory {
 
     public AlgoritmosEsteganografiado Action(String type)
     {
-        if(type.compareTo(LSB1) == 0)
+        switch (type)
         {
-            return new LSB1Helper();
+            case LSB1: return new LSB1Helper();
+            case LSB4: return new LSB4Helper();
+            case LSBI: return new LSBIHelper();
+            default: return null;
         }
-        else if(type.compareTo(LSB4) == 0)
-        {
-            return new LSB4Helper();
-        }
-        else if(type.compareTo(LSBI) == 0)
-        {
-            return new LSBIHelper();
-        }
-        else
-            return null;
     }
 }

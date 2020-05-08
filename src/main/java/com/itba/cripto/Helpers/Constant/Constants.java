@@ -1,4 +1,4 @@
-package Helpers.Constant;
+package com.itba.cripto.Helpers.Constant;
 
 public class Constants {
 

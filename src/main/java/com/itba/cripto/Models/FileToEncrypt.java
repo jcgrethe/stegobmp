@@ -1,4 +1,4 @@
-package Models;
+package com.itba.cripto.Models;
 
 public class FileToEncrypt {
 

@@ -1,4 +1,4 @@
-package Helpers;
+package com.itba.cripto.Helpers;
 
 import Interfaces.AlgoritmosEsteganografiado;
 import Interfaces.EncriptionBase;

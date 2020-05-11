@@ -1,12 +1,13 @@
 package com.itba.cripto.Helpers;
 
 
-import com.itba.cripto.Interfaces.AlgoritmosEsteganografiado;
-import com.itba.cripto.Interfaces.EncriptionBase;
+import com.itba.cripto.Models.EncriptionModeBase;
+import lombok.Getter;
+import lombok.Setter;
 
-public class EncriptionHelper implements EncriptionBase {
-
-    private AlgoritmosEsteganografiado Algorithm;
+@Setter
+@Getter
+public class EncriptionHelper extends EncriptionModeBase {
 
     public EncriptionHelper(){}
 }

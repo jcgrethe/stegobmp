@@ -10,7 +10,7 @@ import static com.itba.cripto.Helpers.Constant.Constants.CosntantsValues.*;
 
 public class AlgorithmsFactory {
 
-    public AlgoritmosEsteganografiado Action(String type)
+    public static AlgoritmosEsteganografiado Action(String type)
     {
         switch (type)
         {

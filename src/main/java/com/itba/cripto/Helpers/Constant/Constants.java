@@ -16,6 +16,11 @@ public class Constants {
         public static final String CFB = "cfb";
         public static final String ECB = "ecb";
 
+        public static final String AES128 = "aes128";
+        public static final String AES192 = "aes192";
+        public static final String AES256 = "aes256";
+        public static final String DES = "des";
+
     }
 
     private Constants(){}

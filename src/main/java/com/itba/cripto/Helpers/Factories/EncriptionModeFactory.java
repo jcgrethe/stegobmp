@@ -12,7 +12,7 @@ import static com.itba.cripto.Helpers.Constant.Constants.CosntantsValues.*;
 public class EncriptionModeFactory
 {
 
-    public EncriptionMode Action(String mode)
+    public static EncriptionMode Action(String mode)
     {
         switch (mode)
         {

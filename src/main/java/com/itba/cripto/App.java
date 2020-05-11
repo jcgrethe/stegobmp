@@ -1,94 +1,27 @@
 package com.itba.cripto;
 
+import com.itba.cripto.Helpers.Factories.ActionFactory;
+import com.itba.cripto.Helpers.Factories.EncriptionModeFactory;
+import com.itba.cripto.Models.EncriptionModeBase;
 import org.apache.commons.cli.*;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.Key;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.Base64;
-
-/**
- * Hello world!
- *
- */
 
 public class App 
 {
-    public static void main( String[] args ) throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidKeyException, BadPaddingException, IllegalBlockSizeException, UnsupportedEncodingException {
+    public static void main( String[] args ){
         CommandLine cmd = getOptions(args);
         String msg = "HOLAAA!!!!";
         String key = "1234567891234567";
-        String enc = encrypt(msg,key);
+        EncriptionModeBase ActionToDo = ActionFactory.Action("-embed");
+        ActionToDo.setEncripter(EncriptionModeFactory.Action("ecb"));
+        String enc = ActionToDo.getEncripter().encrypt(msg,key);
         System.out.println(enc);
-        String dec = decrypt(enc,key);
+        String dec = ActionToDo.getEncripter().decrypt(enc,key);
         System.out.println(dec);
 
     }
-    private static byte[] key;
-    private static SecretKeySpec secretKey;
-
-    public static void setKey(String myKey)
-    {
-        MessageDigest sha = null;
-        try {
-            key = myKey.getBytes("UTF-8");
-            sha = MessageDigest.getInstance("SHA-1");
-            key = sha.digest(key);
-            key = Arrays.copyOf(key, 16);
-            secretKey = new SecretKeySpec(key, "AES");
-        }
-        catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public static String encrypt(String strToEncrypt, String secret)
-    {
-        try
-        {
-            setKey(secret);
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5Padding");
-            cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error while encrypting: " + e.toString());
-        }
-        return null;
-    }
-
-    public static String decrypt(String strToDecrypt, String secret)
-    {
-        try
-        {
-            setKey(secret);
-            Cipher cipher = Cipher.getInstance("AES/ECB/PKCS5PADDING");
-            cipher.init(Cipher.DECRYPT_MODE, secretKey);
-            return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
-        }
-        catch (Exception e)
-        {
-            System.out.println("Error while decrypting: " + e.toString());
-        }
-        return null;
-    }
-
-
 
     private static CommandLine getOptions(String[] args){
-
 
         Options options = new Options();
 

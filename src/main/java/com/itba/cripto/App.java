@@ -24,14 +24,15 @@ public class App {
             String msg = fileHelper.getText();
             String key = cmd.getOptionValue("pass");
 
+            EncriptionModeBase actionToDo = ActionFactory.Action("-embed");
+            actionToDo.setEncrypter(EncriptionModeFactory.Action(getEncryptionMode(cmd)));
 
-
-
-            EncriptionModeBase ActionToDo = ActionFactory.Action("-embed");
-            ActionToDo.setEncripter(EncriptionModeFactory.Action(getEncryptionMode(cmd)));
-            String enc = ActionToDo.getEncripter().encrypt(msg, key, getEncryptionAlgorithm(cmd));
+            String enc = actionToDo.getEncrypter().encrypt(msg, key, getEncryptionAlgorithm(cmd));
             System.out.println(enc);
-            String dec = ActionToDo.getEncripter().decrypt(enc, key, getEncryptionAlgorithm(cmd));
+
+
+
+            String dec = actionToDo.getEncrypter().decrypt(enc, key, getEncryptionAlgorithm(cmd));
             System.out.println(dec);
         } else if (cmd.hasOption("extract")) {
 

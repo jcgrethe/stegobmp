@@ -1,10 +1,7 @@
 package com.itba.cripto.Helpers.Factories;
 
 
-import com.itba.cripto.Helpers.EncryptionModes.CBCHelper;
-import com.itba.cripto.Helpers.EncryptionModes.CFBHelper;
-import com.itba.cripto.Helpers.EncryptionModes.ECBHelper;
-import com.itba.cripto.Helpers.EncryptionModes.OFBHelper;
+import com.itba.cripto.Helpers.EncryptionModes.*;
 import com.itba.cripto.Interfaces.EncriptionMode;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.*;
@@ -16,10 +13,10 @@ public class EncriptionModeFactory
     {
         switch (mode.toLowerCase())
         {
-            case OFB: return new OFBHelper();
-            case CBC: return new CBCHelper();
-            case CFB: return new CFBHelper();
-            case ECB: return new ECBHelper();
+            case OFB: return new EncryptionModeHelper(OFB.toUpperCase());
+            case CBC: return new EncryptionModeHelper(CBC.toUpperCase());
+            case CFB: return new EncryptionModeHelper(CFB.toUpperCase());
+            case ECB: return new EncryptionModeHelper(ECB.toUpperCase());
             default: throw new IllegalArgumentException("illegal mode");
         }
     }

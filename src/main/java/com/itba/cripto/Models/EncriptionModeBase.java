@@ -9,6 +9,6 @@ import lombok.Setter;
 @Getter
 public abstract class EncriptionModeBase {
 
-    private AlgoritmosEsteganografiado Algorithm;
-    private EncriptionMode Encripter;
+    private AlgoritmosEsteganografiado algorithm;
+    private EncriptionMode encrypter;
 }

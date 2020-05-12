@@ -2,7 +2,7 @@ package com.itba.cripto.Helpers.Constant;
 
 public class Constants {
 
-    public static class CosntantsValues {
+    public static class ConstantsValues {
 
         public static final String ENCRYPT = "-embed";
         public static final String DECRYPT = "-extract";

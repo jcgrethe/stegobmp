@@ -7,7 +7,7 @@ import lombok.Setter;
 
 @Setter
 @Getter
-public class EncriptionHelper extends EncriptionModeBase {
+public class EncryptionHelper extends EncriptionModeBase {
 
-    public EncriptionHelper(){}
+    public EncryptionHelper(){}
 }

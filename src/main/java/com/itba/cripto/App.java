@@ -25,16 +25,17 @@ public class App {
             String key = cmd.getOptionValue("pass");
 
 
+
+
             EncriptionModeBase ActionToDo = ActionFactory.Action("-embed");
-            ActionToDo.setEncripter(EncriptionModeFactory.Action(cmd.getOptionValue("m")));
-            String enc = ActionToDo.getEncripter().encrypt(msg, key);
+            ActionToDo.setEncripter(EncriptionModeFactory.Action(getEncryptionMode(cmd)));
+            String enc = ActionToDo.getEncripter().encrypt(msg, key, getEncryptionAlgorithm(cmd));
             System.out.println(enc);
-            String dec = ActionToDo.getEncripter().decrypt(enc, key);
+            String dec = ActionToDo.getEncripter().decrypt(enc, key, getEncryptionAlgorithm(cmd));
             System.out.println(dec);
         } else if (cmd.hasOption("extract")) {
 
         } else throw new IllegalArgumentException("embed extract");
-
 
     }
 
@@ -90,6 +91,21 @@ public class App {
             System.exit(1);
         }
         return cmd;
+    }
+
+
+    private static String getEncryptionAlgorithm(CommandLine cmd){
+        if(cmd.hasOption("a")){
+            return cmd.getOptionValue("a");
+        }
+        return "aes128";
+    }
+
+    private static String getEncryptionMode(CommandLine cmd){
+        if(cmd.hasOption("m")){
+            return cmd.getOptionValue("m");
+        }
+        return "cbc";
     }
 
 }

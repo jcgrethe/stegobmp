@@ -2,6 +2,7 @@ package com.itba.cripto.Helpers.EncryptionModes;
 
 
 import com.itba.cripto.Helpers.Constant.Constants;
+import com.itba.cripto.Helpers.Factories.SchemeFactory;
 import com.itba.cripto.Interfaces.EncriptionMode;
 
 import javax.crypto.Cipher;
@@ -16,17 +17,21 @@ public class ECBHelper implements EncriptionMode {
 
     private static byte[] key;
     private static SecretKeySpec secretKey;
-    private static String Mode = Constants.CosntantsValues.ECB.toUpperCase();
+    private static String Mode = Constants.ConstantsValues.ECB.toUpperCase();
 
-    private void setKey(String myKey)
+    private void setKey(String myKey, String scheme)
     {
         MessageDigest sha = null;
         try {
+            int keyLenght = SchemeFactory.GetScheme(scheme);
             key = myKey.getBytes("UTF-8");
-            sha = MessageDigest.getInstance("SHA-1");
+            sha = MessageDigest.getInstance("SHA-256");
             key = sha.digest(key);
-            key = Arrays.copyOf(key, 16);
-            secretKey = new SecretKeySpec(key, "AES");
+            key = Arrays.copyOf(key, keyLenght);
+            if(keyLenght == 8)
+                secretKey = new SecretKeySpec(key, "DES");
+            else
+                secretKey = new SecretKeySpec(key, "AES");
         }
         catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
@@ -37,12 +42,16 @@ public class ECBHelper implements EncriptionMode {
     }
 
     @Override
-    public String encrypt(String strToEncrypt, String secret)
+    public String encrypt(String strToEncrypt, String secret, String scheme)
     {
         try
         {
-            String mode  = String.format("AES/%s/PKCS5PADDING",this.Mode);
-            setKey(secret);
+            String mode;
+            if(scheme.compareTo(Constants.ConstantsValues.DES) == 0)
+                mode  = String.format("DES/%s/PKCS5PADDING",this.Mode);
+            else
+                mode  = String.format("AES/%s/PKCS5PADDING",this.Mode);
+            setKey(secret,scheme);
             Cipher cipher = Cipher.getInstance(mode);
             cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
@@ -55,12 +64,16 @@ public class ECBHelper implements EncriptionMode {
     }
 
     @Override
-    public String decrypt(String strToDecrypt, String secret)
+    public String decrypt(String strToDecrypt, String secret, String scheme)
     {
         try
         {
-            String mode  = String.format("AES/%s/NoPadding",this.Mode);
-            setKey(secret);
+            String mode;
+            if(scheme.compareTo(Constants.ConstantsValues.DES) == 0)
+                mode  = String.format("DES/%s/PKCS5PADDING",this.Mode);
+            else
+                mode  = String.format("AES/%s/PKCS5PADDING",this.Mode);
+            setKey(secret,scheme);
             Cipher cipher = Cipher.getInstance(mode);
             cipher.init(Cipher.DECRYPT_MODE, secretKey);
             return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));

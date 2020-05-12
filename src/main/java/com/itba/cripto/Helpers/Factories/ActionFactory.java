@@ -17,7 +17,7 @@ public class ActionFactory {
             case DECRYPT:
                 return new DecryptHelper();
             default:
-                return null;
+                throw new IllegalArgumentException();
         }
     }
 }

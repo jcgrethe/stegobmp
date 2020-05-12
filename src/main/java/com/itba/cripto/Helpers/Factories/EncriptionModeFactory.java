@@ -14,13 +14,13 @@ public class EncriptionModeFactory
 
     public static EncriptionMode Action(String mode)
     {
-        switch (mode)
+        switch (mode.toLowerCase())
         {
             case OFB: return new OFBHelper();
             case CBC: return new CBCHelper();
             case CFB: return new CFBHelper();
             case ECB: return new ECBHelper();
-            default: return null;
+            default: throw new IllegalArgumentException();
         }
     }
 }

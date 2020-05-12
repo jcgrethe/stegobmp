@@ -12,11 +12,12 @@ public class App
         CommandLine cmd = getOptions(args);
         String msg = "HOLAAA!!!!";
         String key = "1234567891234567";
+        String scheme = "des";
         EncriptionModeBase ActionToDo = ActionFactory.Action("-embed");
-        ActionToDo.setEncripter(EncriptionModeFactory.Action("ecb"));
-        String enc = ActionToDo.getEncripter().encrypt(msg,key);
+        ActionToDo.setEncripter(EncriptionModeFactory.Action("cbc"));
+        String enc = ActionToDo.getEncripter().encrypt(msg,key,scheme);
         System.out.println(enc);
-        String dec = ActionToDo.getEncripter().decrypt(enc,key);
+        String dec = ActionToDo.getEncripter().decrypt(enc,key,scheme);
         System.out.println(dec);
 
     }

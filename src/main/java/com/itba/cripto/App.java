@@ -4,6 +4,7 @@ import com.itba.cripto.Helpers.Factories.ActionFactory;
 import com.itba.cripto.Helpers.Factories.EncriptionModeFactory;
 import com.itba.cripto.Helpers.FileManager.FileHelper;
 import com.itba.cripto.Models.EncriptionModeBase;
+import com.itba.cripto.Models.Image;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
@@ -14,7 +15,17 @@ public class App {
 
         CommandLine cmd = getOptions(args);
 
-        if (cmd.hasOption("embed")) {
+        FileHelper fileHelper = FileHelper.builder()
+                .inPath(cmd.getOptionValue("in"))
+                .outPath(cmd.getOptionValue("out"))
+                .imagePath(cmd.getOptionValue("p"))
+                .build();
+
+        Image image = fileHelper.getImage();
+
+        fileHelper.saveImage(image);
+
+/*        if (cmd.hasOption("embed")) {
 
             FileHelper fileHelper = FileHelper.builder()
                     .inPath(cmd.getOptionValue("in"))
@@ -36,7 +47,7 @@ public class App {
             System.out.println(dec);
         } else if (cmd.hasOption("extract")) {
 
-        } else throw new IllegalArgumentException("embed extract");
+        } else throw new IllegalArgumentException("embed extract");*/
 
     }
 

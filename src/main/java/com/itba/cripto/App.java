@@ -8,6 +8,8 @@ import com.itba.cripto.Models.Image;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 
 public class App {
@@ -22,6 +24,7 @@ public class App {
                 .build();
 
         Image image = fileHelper.getImage();
+        byte[] dataDecode = ByteBuffer.wrap(image.getImageData()).order(ByteOrder.BIG_ENDIAN).array();
 
         fileHelper.saveImage(image);
 

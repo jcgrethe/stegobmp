@@ -5,9 +5,9 @@ import com.itba.cripto.Models.EncriptionModeBase;
 import lombok.Getter;
 import lombok.Setter;
 
-@Getter
 @Setter
-public class DecryptHelper extends EncriptionModeBase {
+@Getter
+public class EncryptionHelper extends EncriptionModeBase {
 
-    public DecryptHelper(){}
+    public EncryptionHelper(){}
 }

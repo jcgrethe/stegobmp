@@ -2,7 +2,7 @@ package com.itba.cripto.Helpers.Constant;
 
 public class Constants {
 
-    public static class CosntantsValues {
+    public static class ConstantsValues {
 
         public static final String ENCRYPT = "-embed";
         public static final String DECRYPT = "-extract";
@@ -15,6 +15,13 @@ public class Constants {
         public static final String CBC = "cbc";
         public static final String CFB = "cfb";
         public static final String ECB = "ecb";
+
+        public static final String AES128 = "aes128";
+        public static final String AES192 = "aes192";
+        public static final String AES256 = "aes256";
+        public static final String DES = "des";
+
+        public static final int HEADER_SIZE = 54;
 
     }
 

@@ -6,11 +6,11 @@ import com.itba.cripto.Helpers.StegoAlghoritm.LSB4Helper;
 import com.itba.cripto.Helpers.StegoAlghoritm.LSBIHelper;
 import com.itba.cripto.Interfaces.AlgoritmosEsteganografiado;
 
-import static com.itba.cripto.Helpers.Constant.Constants.CosntantsValues.*;
+import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.*;
 
 public class AlgorithmsFactory {
 
-    public AlgoritmosEsteganografiado Action(String type)
+    public static AlgoritmosEsteganografiado Action(String type)
     {
         switch (type)
         {

@@ -3,6 +3,7 @@ package com.itba.cripto;
 import com.itba.cripto.Helpers.Factories.ActionFactory;
 import com.itba.cripto.Helpers.Factories.EncriptionModeFactory;
 import com.itba.cripto.Helpers.FileManager.FileHelper;
+import com.itba.cripto.Helpers.StegoAlghoritm.LSB1Helper;
 import com.itba.cripto.Models.EncriptionModeBase;
 import com.itba.cripto.Models.Image;
 import org.apache.commons.cli.*;
@@ -24,10 +25,10 @@ public class App {
                 .build();
 
         Image image = fileHelper.getImage();
-        byte[] dataDecode = ByteBuffer.wrap(image.getImageData()).order(ByteOrder.BIG_ENDIAN).array();
+        LSB1Helper lsb1 = new LSB1Helper();
+        byte[] data = lsb1.Looking(image.getImageData());
 
-        fileHelper.saveImage(image);
-
+        fileHelper.saveData(data);
 /*        if (cmd.hasOption("embed")) {
 
             FileHelper fileHelper = FileHelper.builder()

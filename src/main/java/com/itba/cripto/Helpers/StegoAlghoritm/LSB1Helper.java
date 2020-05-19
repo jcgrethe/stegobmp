@@ -1,32 +1,55 @@
 package com.itba.cripto.Helpers.StegoAlghoritm;
 
 
-import com.itba.cripto.Helpers.Utils.Covertions;
 import com.itba.cripto.Interfaces.AlgoritmosEsteganografiado;
-import com.itba.cripto.Models.Image;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
+import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBYTESSIZE;
 
 public class LSB1Helper implements AlgoritmosEsteganografiado {
 
 
+    int currentByte=0;
 
-    public byte[] Hide(byte[] img, byte[] file)
-    {
+    public byte[] Hide(byte[] img, byte[] file) {
 
         return null;
     }
 
-    public byte[] Looking(byte[] img){
+    public byte[] Looking(byte[] img) {
 
-        int i, j=0;
+        int currentTextByte = 0;
         byte[] resp = new byte[img.length];
+        int imageSize;
+        ByteBuffer imageSizeByte = ByteBuffer.allocate(IMAGEBYTESSIZE);
 
-        for(i = 0; i < img.length; i++)
-        {
-            byte[j++] = Covertions.GetBit(img[i],7);
+        for (int i=0; i < IMAGEBYTESSIZE; i++) {
+            imageSizeByte.put(getNextByte(img));
         }
+        imageSizeByte.flip();
+        imageSize = imageSizeByte.getInt();
 
-
-        return null;
+        for (int i=0 ; i < imageSize; i++) {
+            resp[currentTextByte++] = getNextByte(img);
+        }
+        return resp;
     }
+
+    private byte getNextByte(byte[] img) {
+        StringBuilder buffer = new StringBuilder();
+        for (int j = 0; j < 8; j++) {
+            buffer.append(getBit(0, img[currentByte]));
+            currentByte++;
+        }
+        //uso parse int en binario si es unsigned. Byte.parse me lo devuelve signed.
+        return (byte) Integer.parseInt(buffer.toString(),2);
+    }
+
+    public int getBit(int position, int num) {
+        return (num >> position) & 1;
+    }
+
 
 }

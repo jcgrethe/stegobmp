@@ -3,6 +3,7 @@ package com.itba.cripto.Helpers.FileManager;
 import com.itba.cripto.Models.Image;
 import lombok.Builder;
 
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Array;
@@ -40,6 +41,12 @@ public class FileHelper {
         buff.put(image.getImageData());
 
         fos.write(buff.array());
+    }
+
+    public void saveData(byte[] data) throws IOException {
+        FileOutputStream fos = new FileOutputStream(outPath);
+        fos.write(data);
+
     }
 
 

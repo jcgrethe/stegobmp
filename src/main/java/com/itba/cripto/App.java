@@ -1,19 +1,15 @@
 package com.itba.cripto;
 
-import com.itba.cripto.Helpers.Factories.ActionFactory;
+import com.itba.cripto.Helpers.EncryptionModes.EncryptionModeHelper;
 import com.itba.cripto.Helpers.Factories.AlgorithmsFactory;
-import com.itba.cripto.Helpers.Factories.EncriptionModeFactory;
 import com.itba.cripto.Helpers.FileManager.FileHelper;
 import com.itba.cripto.Helpers.StegoAlghoritm.LSB1Helper;
-import com.itba.cripto.Helpers.StegoAlghoritm.LSB4Helper;
 import com.itba.cripto.Interfaces.SteganographyAlgorithm;
-import com.itba.cripto.Models.EncriptionModeBase;
 import com.itba.cripto.Models.Image;
 import org.apache.commons.cli.*;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBYTESSIZE;
@@ -24,6 +20,11 @@ public class App {
 
         CommandLine cmd = getOptions(args);
         SteganographyAlgorithm steganographyAlgorithm = AlgorithmsFactory.type(cmd.getOptionValue("steg"));
+        EncryptionModeHelper encryptionModeHelper = null;
+        if (cmd.hasOption("pass")) {
+            encryptionModeHelper = new EncryptionModeHelper(getEncryptionMode(cmd));
+        }
+
         if (cmd.hasOption("embed")) {
             FileHelper fileHelper = FileHelper.builder()
                     .inPath(cmd.getOptionValue("in"))
@@ -34,8 +35,7 @@ public class App {
             Image image = fileHelper.getImage();
             byte[] fileToHide = fileHelper.getText().getBytes();
             LSB1Helper lsb1 = new LSB1Helper();
-            byte[] data = lsb1.hide(image.getImageData(),fileToHide);
-            //byte[] data = lsb1.Looking(image.getImageData());
+            byte[] data = lsb1.hide(image.getImageData(), fileToHide);
         } else if (cmd.hasOption("extract")) {
             FileHelper fileHelper = FileHelper.builder()
                     .inPath(cmd.getOptionValue("in"))
@@ -45,12 +45,10 @@ public class App {
             String key = cmd.getOptionValue("pass");
 
             Image image = fileHelper.getImage();
-            if (key != null){
+            if (key != null) {
                 byte[] data = steganographyAlgorithm.looking(image.getImageData());
-                EncriptionModeBase actionToDo = ActionFactory.Action("-embed");
-                actionToDo.setEncrypter(EncriptionModeFactory.Action(getEncryptionMode(cmd)));
 
-                byte[] dec = actionToDo.getEncrypter().decrypt(data, key, getEncryptionAlgorithm(cmd));
+                byte[] dec = encryptionModeHelper.decrypt(data, key, getEncryptionAlgorithm(cmd));
                 ByteBuffer imageSizeByte = ByteBuffer.allocate(IMAGEBYTESSIZE);
                 for (int i = 0; i < IMAGEBYTESSIZE; i++) {
                     imageSizeByte.put(dec[i]);
@@ -59,7 +57,7 @@ public class App {
                 int imageSize = imageSizeByte.getInt();
 
                 fileHelper.saveData(Arrays.copyOfRange(dec, 4, imageSize + 4));
-            }else{
+            } else {
                 byte[] data = steganographyAlgorithm.looking(image.getImageData());
                 fileHelper.saveData(data);
             }
@@ -122,15 +120,15 @@ public class App {
     }
 
 
-    private static String getEncryptionAlgorithm(CommandLine cmd){
-        if(cmd.hasOption("a")){
+    private static String getEncryptionAlgorithm(CommandLine cmd) {
+        if (cmd.hasOption("a")) {
             return cmd.getOptionValue("a");
         }
         return "aes128";
     }
 
-    private static String getEncryptionMode(CommandLine cmd){
-        if(cmd.hasOption("m")){
+    private static String getEncryptionMode(CommandLine cmd) {
+        if (cmd.hasOption("m")) {
             return cmd.getOptionValue("m");
         }
         return "cbc";

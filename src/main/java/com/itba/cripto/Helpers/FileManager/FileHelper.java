@@ -3,10 +3,8 @@ package com.itba.cripto.Helpers.FileManager;
 import com.itba.cripto.Models.Image;
 import lombok.Builder;
 
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,7 +19,7 @@ public class FileHelper {
     private Image image = null;
 
     public Image getImage() throws IOException {
-        if(image != null)
+        if (image != null)
             return image;
         image = new Image(imagePath);
         return image;

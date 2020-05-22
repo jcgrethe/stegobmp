@@ -4,15 +4,12 @@ import com.itba.cripto.Helpers.Constant.Constants;
 import com.itba.cripto.Helpers.Factories.IVLenghtFactory;
 import com.itba.cripto.Helpers.Factories.SchemeFactory;
 import com.itba.cripto.Interfaces.EncriptionMode;
-import lombok.Builder;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
 import java.util.Base64;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.ECB;
@@ -20,14 +17,13 @@ import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.ECB;
 public class EncryptionModeHelper implements EncriptionMode {
 
 
-    private byte[] key;
-    private SecretKeySpec secretKey;
-    private IvParameterSpec iv;
-    private final String mode;
     private static final int KEY_IDX = 0;
     private static final int IV_IDX = 1;
+    private final String mode;
+    private SecretKeySpec secretKey;
+    private IvParameterSpec iv;
 
-    public EncryptionModeHelper(String mode){
+    public EncryptionModeHelper(String mode) {
         this.mode = mode;
     }
 
@@ -52,7 +48,7 @@ public class EncryptionModeHelper implements EncriptionMode {
             return both;
         }
         int addmd = 0;
-        for (;;) {
+        for (; ; ) {
             md.reset();
             if (addmd++ > 0) {
                 md.update(md_buf);
@@ -66,7 +62,7 @@ public class EncryptionModeHelper implements EncriptionMode {
             }
             i = 0;
             if (nkey > 0) {
-                for (;;) {
+                for (; ; ) {
                     if (nkey == 0)
                         break;
                     if (i == md_buf.length)
@@ -77,7 +73,7 @@ public class EncryptionModeHelper implements EncriptionMode {
                 }
             }
             if (niv > 0 && i != md_buf.length) {
-                for (;;) {
+                for (; ; ) {
                     if (niv == 0)
                         break;
                     if (i == md_buf.length)
@@ -99,62 +95,53 @@ public class EncryptionModeHelper implements EncriptionMode {
 
 
     private void setKey(String myKey, String scheme) throws NoSuchAlgorithmException {
-        MessageDigest sha = null;
         int keyLenght = SchemeFactory.GetScheme(scheme);
         int ivLenght = IVLenghtFactory.GetIVLenght(scheme);
         byte[][] both = EVP_BytesToKey(keyLenght, ivLenght, MessageDigest.getInstance("SHA-256"), myKey.getBytes(), 1);
         this.iv = new IvParameterSpec(both[IV_IDX]);
-        if(keyLenght == 8)
+        if (keyLenght == 8)
             secretKey = new SecretKeySpec(both[KEY_IDX], "DES");
         else
             secretKey = new SecretKeySpec(both[KEY_IDX], "AES");
     }
 
     @Override
-    public String encrypt(String strToEncrypt, String secret, String scheme)
-    {
-        try
-        {
+    public String encrypt(String strToEncrypt, String secret, String scheme) {
+        try {
             String mode;
-            if(scheme.compareTo(Constants.ConstantsValues.DES) == 0)
-                mode  = String.format("DES/%s/NoPadding",this.mode);
+            if (scheme.compareTo(Constants.ConstantsValues.DES) == 0)
+                mode = String.format("DES/%s/NoPadding", this.mode);
             else
-                mode  = String.format("AES/%s/NoPadding",this.mode);
-            setKey(secret,scheme);
+                mode = String.format("AES/%s/NoPadding", this.mode);
+            setKey(secret, scheme);
             Cipher cipher = Cipher.getInstance(mode);
-            if(this.mode.toLowerCase().compareTo(ECB) != 0)
-                cipher.init(Cipher.ENCRYPT_MODE, secretKey,iv);
+            if (this.mode.toLowerCase().compareTo(ECB) != 0)
+                cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
             else
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey);
             return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             System.out.println("Error while encrypting: " + e.toString());
         }
         return null;
     }
 
     @Override
-    public byte[] decrypt(byte[] strToDecrypt, String secret, String scheme)
-    {
-        try
-        {
+    public byte[] decrypt(byte[] strToDecrypt, String secret, String scheme) {
+        try {
             String mode;
-            if(scheme.compareTo(Constants.ConstantsValues.DES) == 0)
-                mode  = String.format("DES/%s/NoPadding",this.mode);
+            if (scheme.compareTo(Constants.ConstantsValues.DES) == 0)
+                mode = String.format("DES/%s/NoPadding", this.mode);
             else
-                mode  = String.format("AES/%s/NoPadding",this.mode);
-            setKey(secret,scheme);
+                mode = String.format("AES/%s/NoPadding", this.mode);
+            setKey(secret, scheme);
             Cipher cipher = Cipher.getInstance(mode);
-            if(this.mode.toLowerCase().compareTo(ECB) != 0)
-                cipher.init(Cipher.DECRYPT_MODE, secretKey,iv);
+            if (this.mode.toLowerCase().compareTo(ECB) != 0)
+                cipher.init(Cipher.DECRYPT_MODE, secretKey, iv);
             else
                 cipher.init(Cipher.DECRYPT_MODE, secretKey);
             return cipher.doFinal(strToDecrypt);
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             throw new IllegalArgumentException("Error while decrypting: " + e.toString());
         }
 

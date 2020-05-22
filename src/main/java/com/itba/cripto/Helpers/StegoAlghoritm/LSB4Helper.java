@@ -63,7 +63,7 @@ public class LSB4Helper implements SteganographyAlgorithm {
     private byte setNextByte(byte[] img, byte[] file) {
 
         byte auxResp = img[currentByte];
-        for(int i = 0; i < 4; i++) {
+        for (int i = 0; i < 4; i++) {
             auxResp = Convertions.ChangeBit(auxResp, i, getBit(bitPosition++, file[fileBytePosition]));
         }
         currentByte++;

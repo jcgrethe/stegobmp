@@ -10,14 +10,16 @@ import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.*;
 
 public class AlgorithmsFactory {
 
-    public static SteganographyAlgorithm type(String type)
-    {
-        switch (type)
-        {
-            case LSB1: return new LSB1Helper();
-            case LSB4: return new LSB4Helper();
-            case LSBI: return new LSBIHelper();
-            default: return null;
+    public static SteganographyAlgorithm type(String type) {
+        switch (type) {
+            case LSB1:
+                return new LSB1Helper();
+            case LSB4:
+                return new LSB4Helper();
+            case LSBI:
+                return new LSBIHelper();
+            default:
+                return null;
         }
     }
 }

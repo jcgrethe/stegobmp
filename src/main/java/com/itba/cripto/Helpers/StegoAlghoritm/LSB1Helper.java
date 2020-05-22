@@ -1,6 +1,7 @@
 package com.itba.cripto.Helpers.StegoAlghoritm;
 
 
+import com.itba.cripto.Helpers.Utils.Convertions;
 import com.itba.cripto.Interfaces.AlgoritmosEsteganografiado;
 
 import java.nio.ByteBuffer;
@@ -9,17 +10,24 @@ import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBY
 
 public class LSB1Helper implements AlgoritmosEsteganografiado {
 
-
     int currentByte = 0;
+    int currentTextByte = 0;
+    int bitPosition = 0;
+    int fileBytePosition = 0;
 
-    public byte[] Hide(byte[] img, byte[] file) {
+    public byte[] hide(byte[] img, byte[] file) {
 
-        return null;
+        int imageSize = img.length;
+        byte[] resp = img;
+
+        for (int i = 0; i < imageSize; i++) {
+            resp[currentByte] = setNextByte(img, file);
+        }
+        return resp;
     }
 
-    public byte[] Looking(byte[] img) {
+    public byte[] looking(byte[] img) {
 
-        int currentTextByte = 0;
         int imageSize;
         ByteBuffer imageSizeByte = ByteBuffer.allocate(IMAGEBYTESSIZE);
 
@@ -40,16 +48,23 @@ public class LSB1Helper implements AlgoritmosEsteganografiado {
     private byte getNextByte(byte[] img) {
         StringBuilder buffer = new StringBuilder();
         for (int j = 0; j < 8; j++) {
-            buffer.append(getBit(0, img[currentByte]));
+            buffer.append(Convertions.getBit(0, img[currentByte]));
             currentByte++;
         }
         //uso parse int en binario si es unsigned. Byte.parse me lo devuelve signed.
         return (byte) Integer.parseInt(buffer.toString(), 2);
     }
 
-    public int getBit(int position, int num) {
-        return (num >> position) & 1;
-    }
+    private byte setNextByte(byte[] img, byte[] file) {
 
+        byte aux = Convertions.ChangeBit(img[currentByte++], 0, Convertions.getBit(bitPosition++, file[fileBytePosition]));
+
+        if (bitPosition == 8) {
+            bitPosition = 0;
+            fileBytePosition++;
+        }
+
+        return aux;
+    }
 
 }

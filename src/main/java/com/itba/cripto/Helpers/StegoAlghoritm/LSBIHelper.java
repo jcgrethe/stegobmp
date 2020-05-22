@@ -6,7 +6,7 @@ import com.itba.cripto.Models.Image;
 
 public class LSBIHelper implements AlgoritmosEsteganografiado {
 
-    public byte[] Hide(byte[] img, byte[] file){return null;}
+    public byte[] hide(byte[] img, byte[] file){return null;}
 
-    public byte[] Looking(byte[] img){return null;}
+    public byte[] looking(byte[] img){return null;}
 }

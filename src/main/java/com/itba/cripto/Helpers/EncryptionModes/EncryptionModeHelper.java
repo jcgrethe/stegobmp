@@ -34,8 +34,9 @@ public class EncryptionModeHelper implements EncriptionMode {
     /**
      * Thanks go to Ola Bini for releasing this source on his blog. The source was obtained from <a
      * href="http://olabini.com/blog/tag/evp_bytestokey/">here</a> .
+     * https://gist.github.com/luosong/5523434
      */
-    public static byte[][] EVP_BytesToKey(int key_len, int iv_len, MessageDigest md, byte[] salt, byte[] data, int count) {
+    public static byte[][] EVP_BytesToKey(int key_len, int iv_len, MessageDigest md, byte[] data, int count) {
         byte[][] both = new byte[2][];
         byte[] key = new byte[key_len];
         int key_ix = 0;
@@ -57,9 +58,6 @@ public class EncryptionModeHelper implements EncriptionMode {
                 md.update(md_buf);
             }
             md.update(data);
-            if (null != salt) {
-                md.update(salt, 0, 8);
-            }
             md_buf = md.digest();
             for (i = 1; i < count; i++) {
                 md.reset();

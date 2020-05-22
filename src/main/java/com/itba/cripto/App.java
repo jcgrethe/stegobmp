@@ -21,27 +21,18 @@ public class App {
     public static void main(String[] args) throws IOException {
 
         CommandLine cmd = getOptions(args);
-
         if (cmd.hasOption("embed")) {
-
-/*            FileHelper fileHelper = FileHelper.builder()
+            FileHelper fileHelper = FileHelper.builder()
                     .inPath(cmd.getOptionValue("in"))
                     .outPath(cmd.getOptionValue("out"))
-                    .image(cmd.getOptionValue("p"))
+                    .imagePath(cmd.getOptionValue("p"))
                     .build();
-            String msg = fileHelper.getText();
-            String key = cmd.getOptionValue("pass");
 
-            EncriptionModeBase actionToDo = ActionFactory.Action("-embed");
-            actionToDo.setEncrypter(EncriptionModeFactory.Action(getEncryptionMode(cmd)));
-
-            String enc = actionToDo.getEncrypter().encrypt(msg, key, getEncryptionAlgorithm(cmd));
-            System.out.println(enc);
-
-
-
-            String dec = actionToDo.getEncrypter().decrypt(enc, key, getEncryptionAlgorithm(cmd));
-            System.out.println(dec);*/
+            Image image = fileHelper.getImage();
+            byte[] fileToHide = fileHelper.getText().getBytes();
+            LSB1Helper lsb1 = new LSB1Helper();
+            byte[] data = lsb1.hide(image.getImageData(),fileToHide);
+            //byte[] data = lsb1.Looking(image.getImageData());
         } else if (cmd.hasOption("extract")) {
             FileHelper fileHelper = FileHelper.builder()
                     .inPath(cmd.getOptionValue("in"))
@@ -52,7 +43,7 @@ public class App {
 
             Image image = fileHelper.getImage();
             LSB4Helper lsb4 = new LSB4Helper();
-            byte[] data = lsb4.Looking(image.getImageData());
+            byte[] data = lsb4.looking(image.getImageData());
             EncriptionModeBase actionToDo = ActionFactory.Action("-embed");
             actionToDo.setEncrypter(EncriptionModeFactory.Action(getEncryptionMode(cmd)));
 

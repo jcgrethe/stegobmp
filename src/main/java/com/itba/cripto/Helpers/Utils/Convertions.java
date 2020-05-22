@@ -3,7 +3,7 @@ package com.itba.cripto.Helpers.Utils;
 import java.math.BigInteger;
 import java.nio.charset.Charset;
 
-public class Covertions {
+public class Convertions {
 
     public static String hexStringFromBytes(byte[] b)
     {
@@ -30,7 +30,7 @@ public class Covertions {
         return resp = -1;
     }
 
-    public static int GetBit(byte b, int position){
-        return (b >> position) & 1;
+    public static int getBit(int position, int num) {
+        return (num >> position) & 1;
     }
 }

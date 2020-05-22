@@ -26,8 +26,10 @@ public class App {
                 .build();
 
         Image image = fileHelper.getImage();
-        LSB4Helper lsb1 = new LSB4Helper();
-        byte[] data = lsb1.Looking(image.getImageData());
+        byte[] fileToHide = fileHelper.getText().getBytes();
+        LSB1Helper lsb1 = new LSB1Helper();
+        byte[] data = lsb1.Hide(image.getImageData(),fileToHide);
+        //byte[] data = lsb1.Looking(image.getImageData());
 
         fileHelper.saveData(data);
 /*        if (cmd.hasOption("embed")) {

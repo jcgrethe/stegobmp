@@ -2,13 +2,12 @@ package com.itba.cripto.Helpers.Factories;
 
 
 import com.itba.cripto.Helpers.EncryptionModes.EncryptionModeHelper;
-import com.itba.cripto.Interfaces.EncriptionMode;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.*;
 
 public class EncryptionModeFactory {
 
-    public static EncriptionMode Action(String mode) {
+    public static EncryptionModeHelper Action(String mode) {
         switch (mode.toLowerCase()) {
             case OFB:
                 return new EncryptionModeHelper(OFB.toUpperCase());

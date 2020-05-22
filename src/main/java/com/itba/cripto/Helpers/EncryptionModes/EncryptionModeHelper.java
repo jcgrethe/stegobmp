@@ -3,7 +3,6 @@ package com.itba.cripto.Helpers.EncryptionModes;
 import com.itba.cripto.Helpers.Constant.Constants;
 import com.itba.cripto.Helpers.Factories.IVLenghtFactory;
 import com.itba.cripto.Helpers.Factories.SchemeFactory;
-import com.itba.cripto.Interfaces.EncriptionMode;
 
 import javax.crypto.Cipher;
 import javax.crypto.spec.IvParameterSpec;
@@ -14,7 +13,7 @@ import java.util.Base64;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.ECB;
 
-public class EncryptionModeHelper implements EncriptionMode {
+public class EncryptionModeHelper {
 
 
     private static final int KEY_IDX = 0;
@@ -105,7 +104,6 @@ public class EncryptionModeHelper implements EncriptionMode {
             secretKey = new SecretKeySpec(both[KEY_IDX], "AES");
     }
 
-    @Override
     public String encrypt(String strToEncrypt, String secret, String scheme) {
         try {
             String mode;
@@ -126,7 +124,6 @@ public class EncryptionModeHelper implements EncriptionMode {
         return null;
     }
 
-    @Override
     public byte[] decrypt(byte[] strToDecrypt, String secret, String scheme) {
         try {
             String mode;

@@ -1,10 +1,12 @@
 package com.itba.cripto;
 
 import com.itba.cripto.Helpers.Factories.ActionFactory;
+import com.itba.cripto.Helpers.Factories.AlgorithmsFactory;
 import com.itba.cripto.Helpers.Factories.EncriptionModeFactory;
 import com.itba.cripto.Helpers.FileManager.FileHelper;
 import com.itba.cripto.Helpers.StegoAlghoritm.LSB1Helper;
 import com.itba.cripto.Helpers.StegoAlghoritm.LSB4Helper;
+import com.itba.cripto.Interfaces.SteganographyAlgorithm;
 import com.itba.cripto.Models.EncriptionModeBase;
 import com.itba.cripto.Models.Image;
 import org.apache.commons.cli.*;
@@ -21,6 +23,7 @@ public class App {
     public static void main(String[] args) throws IOException {
 
         CommandLine cmd = getOptions(args);
+        SteganographyAlgorithm steganographyAlgorithm = AlgorithmsFactory.type(cmd.getOptionValue("steg"));
         if (cmd.hasOption("embed")) {
             FileHelper fileHelper = FileHelper.builder()
                     .inPath(cmd.getOptionValue("in"))
@@ -42,20 +45,24 @@ public class App {
             String key = cmd.getOptionValue("pass");
 
             Image image = fileHelper.getImage();
-            LSB4Helper lsb4 = new LSB4Helper();
-            byte[] data = lsb4.looking(image.getImageData());
-            EncriptionModeBase actionToDo = ActionFactory.Action("-embed");
-            actionToDo.setEncrypter(EncriptionModeFactory.Action(getEncryptionMode(cmd)));
+            if (key != null){
+                byte[] data = steganographyAlgorithm.looking(image.getImageData());
+                EncriptionModeBase actionToDo = ActionFactory.Action("-embed");
+                actionToDo.setEncrypter(EncriptionModeFactory.Action(getEncryptionMode(cmd)));
 
-            byte[] dec = actionToDo.getEncrypter().decrypt(data, key, getEncryptionAlgorithm(cmd));
-            ByteBuffer imageSizeByte = ByteBuffer.allocate(IMAGEBYTESSIZE);
-            for (int i = 0; i < IMAGEBYTESSIZE; i++) {
-                imageSizeByte.put(dec[i]);
+                byte[] dec = actionToDo.getEncrypter().decrypt(data, key, getEncryptionAlgorithm(cmd));
+                ByteBuffer imageSizeByte = ByteBuffer.allocate(IMAGEBYTESSIZE);
+                for (int i = 0; i < IMAGEBYTESSIZE; i++) {
+                    imageSizeByte.put(dec[i]);
+                }
+                imageSizeByte.flip();
+                int imageSize = imageSizeByte.getInt();
+
+                fileHelper.saveData(Arrays.copyOfRange(dec, 4, imageSize + 4));
+            }else{
+                byte[] data = steganographyAlgorithm.looking(image.getImageData());
+                fileHelper.saveData(data);
             }
-            imageSizeByte.flip();
-            int imageSize = imageSizeByte.getInt();
-
-            fileHelper.saveData(Arrays.copyOfRange(dec,4, imageSize + 4));
         } else throw new IllegalArgumentException("embed extract");
 
     }

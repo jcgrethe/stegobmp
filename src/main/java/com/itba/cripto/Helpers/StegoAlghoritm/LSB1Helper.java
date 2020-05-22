@@ -2,13 +2,13 @@ package com.itba.cripto.Helpers.StegoAlghoritm;
 
 
 import com.itba.cripto.Helpers.Utils.Convertions;
-import com.itba.cripto.Interfaces.AlgoritmosEsteganografiado;
+import com.itba.cripto.Interfaces.SteganographyAlgorithm;
 
 import java.nio.ByteBuffer;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBYTESSIZE;
 
-public class LSB1Helper implements AlgoritmosEsteganografiado {
+public class LSB1Helper implements SteganographyAlgorithm {
 
     int currentByte = 0;
     int currentTextByte = 0;

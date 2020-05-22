@@ -2,8 +2,7 @@ package com.itba.cripto.Helpers.StegoAlghoritm;
 
 
 import com.itba.cripto.Helpers.Utils.Convertions;
-import com.itba.cripto.Interfaces.AlgoritmosEsteganografiado;
-import com.itba.cripto.Models.Image;
+import com.itba.cripto.Interfaces.SteganographyAlgorithm;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -11,7 +10,7 @@ import java.nio.ByteOrder;
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBYTESSIZE;
 import static com.itba.cripto.Helpers.Utils.Convertions.getBit;
 
-public class LSB4Helper implements AlgoritmosEsteganografiado {
+public class LSB4Helper implements SteganographyAlgorithm {
 
     int currentByte = 0;
     int bitPosition = 0;

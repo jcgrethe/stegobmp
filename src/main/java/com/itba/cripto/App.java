@@ -4,6 +4,7 @@ import com.itba.cripto.Helpers.Factories.ActionFactory;
 import com.itba.cripto.Helpers.Factories.EncriptionModeFactory;
 import com.itba.cripto.Helpers.FileManager.FileHelper;
 import com.itba.cripto.Helpers.StegoAlghoritm.LSB1Helper;
+import com.itba.cripto.Helpers.StegoAlghoritm.LSB4Helper;
 import com.itba.cripto.Models.EncriptionModeBase;
 import com.itba.cripto.Models.Image;
 import org.apache.commons.cli.*;
@@ -25,7 +26,7 @@ public class App {
                 .build();
 
         Image image = fileHelper.getImage();
-        LSB1Helper lsb1 = new LSB1Helper();
+        LSB4Helper lsb1 = new LSB4Helper();
         byte[] data = lsb1.Looking(image.getImageData());
 
         fileHelper.saveData(data);

@@ -5,6 +5,7 @@ import com.itba.cripto.Interfaces.AlgoritmosEsteganografiado;
 import com.itba.cripto.Models.Image;
 
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBYTESSIZE;
 
@@ -21,7 +22,7 @@ public class LSB4Helper implements AlgoritmosEsteganografiado {
 
         int currentTextByte = 0;
         int imageSize;
-        ByteBuffer imageSizeByte = ByteBuffer.allocate(IMAGEBYTESSIZE);
+        ByteBuffer imageSizeByte = ByteBuffer.allocate(IMAGEBYTESSIZE).order(ByteOrder.BIG_ENDIAN);
 
         for (int i = 0; i < IMAGEBYTESSIZE; i++) {
             imageSizeByte.put(getNextByte(img));
@@ -37,7 +38,7 @@ public class LSB4Helper implements AlgoritmosEsteganografiado {
         return resp;
     }
 
-    private byte getNextByte(byte[] img) {
+    public byte getNextByte(byte[] img) {
         StringBuilder buffer = new StringBuilder();
         for (int j = 0; j < 2; j++) {
             buffer.append(getBit(3, img[currentByte]));

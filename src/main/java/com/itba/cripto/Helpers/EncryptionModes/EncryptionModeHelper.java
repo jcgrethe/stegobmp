@@ -24,34 +24,92 @@ public class EncryptionModeHelper implements EncriptionMode {
     private SecretKeySpec secretKey;
     private IvParameterSpec iv;
     private final String mode;
+    private static final int KEY_IDX = 0;
+    private static final int IV_IDX = 1;
 
     public EncryptionModeHelper(String mode){
         this.mode = mode;
     }
 
-    private void setKey(String myKey, String scheme)
-    {
+    /**
+     * Thanks go to Ola Bini for releasing this source on his blog. The source was obtained from <a
+     * href="http://olabini.com/blog/tag/evp_bytestokey/">here</a> .
+     */
+    public static byte[][] EVP_BytesToKey(int key_len, int iv_len, MessageDigest md, byte[] salt, byte[] data, int count) {
+        byte[][] both = new byte[2][];
+        byte[] key = new byte[key_len];
+        int key_ix = 0;
+        byte[] iv = new byte[iv_len];
+        int iv_ix = 0;
+        both[0] = key;
+        both[1] = iv;
+        byte[] md_buf = null;
+        int nkey = key_len;
+        int niv = iv_len;
+        int i = 0;
+        if (data == null) {
+            return both;
+        }
+        int addmd = 0;
+        for (;;) {
+            md.reset();
+            if (addmd++ > 0) {
+                md.update(md_buf);
+            }
+            md.update(data);
+            if (null != salt) {
+                md.update(salt, 0, 8);
+            }
+            md_buf = md.digest();
+            for (i = 1; i < count; i++) {
+                md.reset();
+                md.update(md_buf);
+                md_buf = md.digest();
+            }
+            i = 0;
+            if (nkey > 0) {
+                for (;;) {
+                    if (nkey == 0)
+                        break;
+                    if (i == md_buf.length)
+                        break;
+                    key[key_ix++] = md_buf[i];
+                    nkey--;
+                    i++;
+                }
+            }
+            if (niv > 0 && i != md_buf.length) {
+                for (;;) {
+                    if (niv == 0)
+                        break;
+                    if (i == md_buf.length)
+                        break;
+                    iv[iv_ix++] = md_buf[i];
+                    niv--;
+                    i++;
+                }
+            }
+            if (nkey == 0 && niv == 0) {
+                break;
+            }
+        }
+        for (i = 0; i < md_buf.length; i++) {
+            md_buf[i] = 0;
+        }
+        return both;
+    }
+
+
+    private void setKey(String myKey, String scheme) throws NoSuchAlgorithmException {
         MessageDigest sha = null;
-        try {
-            int keyLenght = SchemeFactory.GetScheme(scheme);
-            int ivLenght = IVLenghtFactory.GetIVLenght(scheme);
-            key = myKey.getBytes("UTF-8");
-            sha = MessageDigest.getInstance("SHA-256");
-            key = sha.digest(key);
-            key = Arrays.copyOf(key, keyLenght);
-            int requiredLength = keyLenght + ivLenght;
-            this.iv = new IvParameterSpec(Arrays.copyOfRange(key, keyLenght, requiredLength));
-            if(keyLenght == 8)
-                secretKey = new SecretKeySpec(key, "DES");
-            else
-                secretKey = new SecretKeySpec(key, "AES");
-        }
-        catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
-        }
+        int keyLenght = SchemeFactory.GetScheme(scheme);
+        int ivLenght = IVLenghtFactory.GetIVLenght(scheme);
+        byte[][] both = EVP_BytesToKey(keyLenght, ivLenght, MessageDigest.getInstance("SHA-256"), myKey.getBytes(), 1);
+        this.iv = new IvParameterSpec(both[IV_IDX]);
+        if(keyLenght == 8)
+            secretKey = new SecretKeySpec(both[KEY_IDX], "DES");
+        else
+            secretKey = new SecretKeySpec(both[KEY_IDX], "AES");
     }
 
     @Override
@@ -61,9 +119,9 @@ public class EncryptionModeHelper implements EncriptionMode {
         {
             String mode;
             if(scheme.compareTo(Constants.ConstantsValues.DES) == 0)
-                mode  = String.format("DES/%s/PKCS5PADDING",this.mode);
+                mode  = String.format("DES/%s/NoPadding",this.mode);
             else
-                mode  = String.format("AES/%s/PKCS5PADDING",this.mode);
+                mode  = String.format("AES/%s/NoPadding",this.mode);
             setKey(secret,scheme);
             Cipher cipher = Cipher.getInstance(mode);
             if(this.mode.toLowerCase().compareTo(ECB) != 0)
@@ -80,28 +138,28 @@ public class EncryptionModeHelper implements EncriptionMode {
     }
 
     @Override
-    public String decrypt(String strToDecrypt, String secret, String scheme)
+    public byte[] decrypt(byte[] strToDecrypt, String secret, String scheme)
     {
         try
         {
             String mode;
             if(scheme.compareTo(Constants.ConstantsValues.DES) == 0)
-                mode  = String.format("DES/%s/PKCS5PADDING",this.mode);
+                mode  = String.format("DES/%s/NoPadding",this.mode);
             else
-                mode  = String.format("AES/%s/PKCS5PADDING",this.mode);
+                mode  = String.format("AES/%s/NoPadding",this.mode);
             setKey(secret,scheme);
             Cipher cipher = Cipher.getInstance(mode);
             if(this.mode.toLowerCase().compareTo(ECB) != 0)
                 cipher.init(Cipher.DECRYPT_MODE, secretKey,iv);
             else
                 cipher.init(Cipher.DECRYPT_MODE, secretKey);
-            return new String(cipher.doFinal(Base64.getDecoder().decode(strToDecrypt)));
+            return cipher.doFinal(strToDecrypt);
         }
         catch (Exception e)
         {
-            System.out.println("Error while decrypting: " + e.toString());
+            throw new IllegalArgumentException("Error while decrypting: " + e.toString());
         }
-        return null;
+
     }
 
 

@@ -12,6 +12,9 @@ import org.apache.commons.cli.*;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Arrays;
+
+import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBYTESSIZE;
 
 
 public class App {
@@ -19,20 +22,9 @@ public class App {
 
         CommandLine cmd = getOptions(args);
 
-        FileHelper fileHelper = FileHelper.builder()
-                .inPath(cmd.getOptionValue("in"))
-                .outPath(cmd.getOptionValue("out"))
-                .imagePath(cmd.getOptionValue("p"))
-                .build();
+        if (cmd.hasOption("embed")) {
 
-        Image image = fileHelper.getImage();
-        LSB4Helper lsb1 = new LSB4Helper();
-        byte[] data = lsb1.Looking(image.getImageData());
-
-        fileHelper.saveData(data);
-/*        if (cmd.hasOption("embed")) {
-
-            FileHelper fileHelper = FileHelper.builder()
+/*            FileHelper fileHelper = FileHelper.builder()
                     .inPath(cmd.getOptionValue("in"))
                     .outPath(cmd.getOptionValue("out"))
                     .image(cmd.getOptionValue("p"))
@@ -49,10 +41,31 @@ public class App {
 
 
             String dec = actionToDo.getEncrypter().decrypt(enc, key, getEncryptionAlgorithm(cmd));
-            System.out.println(dec);
+            System.out.println(dec);*/
         } else if (cmd.hasOption("extract")) {
+            FileHelper fileHelper = FileHelper.builder()
+                    .inPath(cmd.getOptionValue("in"))
+                    .outPath(cmd.getOptionValue("out"))
+                    .imagePath(cmd.getOptionValue("p"))
+                    .build();
+            String key = cmd.getOptionValue("pass");
 
-        } else throw new IllegalArgumentException("embed extract");*/
+            Image image = fileHelper.getImage();
+            LSB4Helper lsb4 = new LSB4Helper();
+            byte[] data = lsb4.Looking(image.getImageData());
+            EncriptionModeBase actionToDo = ActionFactory.Action("-embed");
+            actionToDo.setEncrypter(EncriptionModeFactory.Action(getEncryptionMode(cmd)));
+
+            byte[] dec = actionToDo.getEncrypter().decrypt(data, key, getEncryptionAlgorithm(cmd));
+            ByteBuffer imageSizeByte = ByteBuffer.allocate(IMAGEBYTESSIZE);
+            for (int i = 0; i < IMAGEBYTESSIZE; i++) {
+                imageSizeByte.put(dec[i]);
+            }
+            imageSizeByte.flip();
+            int imageSize = imageSizeByte.getInt();
+
+            fileHelper.saveData(Arrays.copyOfRange(dec,4, imageSize + 4));
+        } else throw new IllegalArgumentException("embed extract");
 
     }
 

@@ -61,10 +61,10 @@ public class LSB4Helper implements SteganographyAlgorithm {
     }
 
     private byte setNextByte(byte current, byte[] file) {
-        byte aux = 0;
+        byte aux = current;
         if(file.length > fileBytePosition) {
-            for (int i = 0; i < 4; i++) {
-                aux = Convertions.ChangeBit(current, i, Convertions.getBit(--bitPosition, file[fileBytePosition]));
+            for (int i = 3; i >=0 ; i--) {
+                aux = Convertions.ChangeBit(aux, i, Convertions.getBit(--bitPosition, file[fileBytePosition]));
             }
 
             if (bitPosition == 0) {

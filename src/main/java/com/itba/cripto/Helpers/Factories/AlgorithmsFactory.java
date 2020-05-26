@@ -19,7 +19,7 @@ public class AlgorithmsFactory {
             case LSBI:
                 return new LSBIHelper();
             default:
-                return null;
+                throw new IllegalArgumentException("Invalid Steganography Algorithm");
         }
     }
 }

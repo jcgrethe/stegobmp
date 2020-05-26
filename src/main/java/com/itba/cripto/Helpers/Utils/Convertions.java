@@ -26,7 +26,7 @@ public class Convertions {
                 resp &= ~(1 << position);
                 return resp;
         }
-        return resp = -1;
+        throw new IllegalArgumentException("bits wrong");
     }
 
     public static int getBit(int position, int num) {

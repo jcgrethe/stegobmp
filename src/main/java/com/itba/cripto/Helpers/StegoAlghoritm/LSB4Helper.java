@@ -13,7 +13,7 @@ import static com.itba.cripto.Helpers.Utils.Convertions.getBit;
 public class LSB4Helper implements SteganographyAlgorithm {
 
     int currentByte = 0;
-    int bitPosition = 0;
+    int bitPosition = 8;
     int fileBytePosition = 0;
 
     public byte[] hide(byte[] img, byte[] file) {
@@ -22,7 +22,7 @@ public class LSB4Helper implements SteganographyAlgorithm {
         byte[] resp = img;
 
         for (int i = 0; i < imageSize; i++) {
-            resp[currentByte] = setNextByte(img, file);
+            resp[i] = setNextByte(img[i], file);
         }
         return resp;
     }
@@ -60,19 +60,22 @@ public class LSB4Helper implements SteganographyAlgorithm {
         return (byte) Integer.parseInt(buffer.toString(), 2);
     }
 
-    private byte setNextByte(byte[] img, byte[] file) {
+    private byte setNextByte(byte current, byte[] file) {
+        byte aux = 0;
+        if(file.length > fileBytePosition) {
+            for (int i = 0; i < 4; i++) {
+                aux = Convertions.ChangeBit(current, i, Convertions.getBit(--bitPosition, file[fileBytePosition]));
+            }
 
-        byte auxResp = img[currentByte];
-        for (int i = 0; i < 4; i++) {
-            auxResp = Convertions.ChangeBit(auxResp, i, getBit(bitPosition++, file[fileBytePosition]));
-        }
-        currentByte++;
-        if (bitPosition == 8) {
-            bitPosition = 0;
-            fileBytePosition++;
+            if (bitPosition == 0) {
+                bitPosition = 8;
+                fileBytePosition++;
+            }
+        }else {
+            aux = current;
         }
 
-        return auxResp;
+        return aux;
     }
 
 

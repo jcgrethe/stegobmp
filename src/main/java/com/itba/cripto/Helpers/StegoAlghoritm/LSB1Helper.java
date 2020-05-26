@@ -12,7 +12,7 @@ public class LSB1Helper implements SteganographyAlgorithm {
 
     int currentByte = 0;
     int currentTextByte = 0;
-    int bitPosition = 0;
+    int bitPosition = 8;
     int fileBytePosition = 0;
 
     public byte[] hide(byte[] img, byte[] file) {
@@ -21,7 +21,7 @@ public class LSB1Helper implements SteganographyAlgorithm {
         byte[] resp = img;
 
         for (int i = 0; i < imageSize; i++) {
-            resp[currentByte] = setNextByte(img, file);
+            resp[i] = setNextByte(img[i], file);
         }
         return resp;
     }
@@ -55,13 +55,17 @@ public class LSB1Helper implements SteganographyAlgorithm {
         return (byte) Integer.parseInt(buffer.toString(), 2);
     }
 
-    private byte setNextByte(byte[] img, byte[] file) {
+    private byte setNextByte(byte current, byte[] file) {
+        byte aux;
+        if(file.length > fileBytePosition) {
+            aux = Convertions.ChangeBit(current, 0, Convertions.getBit(--bitPosition, file[fileBytePosition]));
 
-        byte aux = Convertions.ChangeBit(img[currentByte++], 0, Convertions.getBit(bitPosition++, file[fileBytePosition]));
-
-        if (bitPosition == 8) {
-            bitPosition = 0;
-            fileBytePosition++;
+            if (bitPosition == 0) {
+                bitPosition = 8;
+                fileBytePosition++;
+            }
+        }else {
+            aux = current;
         }
 
         return aux;

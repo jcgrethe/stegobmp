@@ -1,12 +1,12 @@
 package com.itba.cripto;
 
 import com.itba.cripto.Helpers.EncryptionModes.EncryptionModeHelper;
+import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.Assertions;
+
 import java.io.IOException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
 
 public class test {
 
@@ -15,8 +15,7 @@ public class test {
     public void encryptCBC() {
         String mode = "cbc";
         EncryptionModeHelper encryptionModeHelper = new EncryptionModeHelper(mode);
-
-        String secret = "misecretosjkdnkjasndkas";
+        String secret = RandomStringUtils.randomAlphanumeric(1000); ;
         String pass = "mipasssss";
         byte[] data = encryptionModeHelper.encrypt(secret.getBytes(), pass, "aes128");
 
@@ -30,7 +29,7 @@ public class test {
         String mode = "ecb";
         EncryptionModeHelper encryptionModeHelper = new EncryptionModeHelper(mode);
 
-        String secret = "misecresmadkmalksdto";
+        String secret = RandomStringUtils.randomAlphanumeric(1000);;
         String pass = "mipassss";
         byte[] data = encryptionModeHelper.encrypt(secret.getBytes(), pass, "aes128");
 
@@ -43,7 +42,7 @@ public class test {
     public void encryptCFB() throws IOException {
         EncryptionModeHelper encryptionModeHelper = new EncryptionModeHelper("cfb");
 
-        String secret = "misecreto";
+        String secret = RandomStringUtils.randomAlphanumeric(1000);
         String pass = "mipass";
         byte[] data = encryptionModeHelper.encrypt(secret.getBytes(), pass, "aes128");
 
@@ -57,7 +56,7 @@ public class test {
         String mode = "ofb";
         EncryptionModeHelper encryptionModeHelper = new EncryptionModeHelper(mode);
 
-        String secret = "misecreto";
+        String secret = RandomStringUtils.randomAlphanumeric(1000);;
         String pass = "mipass";
         byte[] data = encryptionModeHelper.encrypt(secret.getBytes(), pass, "aes128");
 

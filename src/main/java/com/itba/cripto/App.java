@@ -55,7 +55,6 @@ public class App {
                 ByteBuffer hiddenEncryptedFile = ByteBuffer.allocate(encrypt.length + 4);
                 hiddenEncryptedFile.putInt(encrypt.length);
                 hiddenEncryptedFile.put(encrypt);
-
                 data = steganographyAlgorithm.hide(image.getImageData(), hiddenEncryptedFile.array());
 
             } else {

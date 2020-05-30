@@ -5,6 +5,7 @@ import org.apache.commons.lang.RandomStringUtils;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -39,8 +40,8 @@ public class test {
 
     private void test(String mode, String scheme){
         EncryptionModeHelper encryptionModeHelper = new EncryptionModeHelper(mode);
-
-        String secret = RandomStringUtils.randomAlphanumeric(1000);;
+        int randomNum = ThreadLocalRandom.current().nextInt(100, 20000);
+        String secret = RandomStringUtils.randomAlphanumeric(randomNum);;
         String pass = "mipass";
         byte[] data = encryptionModeHelper.encrypt(secret.getBytes(), pass, scheme);
 

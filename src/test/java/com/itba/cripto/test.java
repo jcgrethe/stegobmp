@@ -40,9 +40,9 @@ public class test {
 
     private void test(String mode, String scheme){
         EncryptionModeHelper encryptionModeHelper = new EncryptionModeHelper(mode);
-        int randomNum = ThreadLocalRandom.current().nextInt(100, 20000);
-        String secret = RandomStringUtils.randomAlphanumeric(randomNum);;
-        String pass = "mipass";
+        ThreadLocalRandom random = ThreadLocalRandom.current();
+        String secret = RandomStringUtils.randomAlphanumeric(random.nextInt(100, 20000));
+        String pass = RandomStringUtils.randomAlphanumeric(random.nextInt(10, 200));
         byte[] data = encryptionModeHelper.encrypt(secret.getBytes(), pass, scheme);
 
         EncryptionModeHelper decryptionModeHelper = new EncryptionModeHelper(mode);

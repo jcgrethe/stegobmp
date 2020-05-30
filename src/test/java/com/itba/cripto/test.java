@@ -11,57 +11,42 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class test {
 
 
-    @Test
-    public void encryptCBC() {
-        String mode = "cbc";
-        EncryptionModeHelper encryptionModeHelper = new EncryptionModeHelper(mode);
-        String secret = RandomStringUtils.randomAlphanumeric(1000); ;
-        String pass = "mipasssss";
-        byte[] data = encryptionModeHelper.encrypt(secret.getBytes(), pass, "aes128");
 
-        EncryptionModeHelper decryptionModeHelper = new EncryptionModeHelper(mode);
-        byte[] result = decryptionModeHelper.decrypt(data, pass, "aes128");
-        assertEquals(secret, new String(result));
+
+    @Test
+    public void encrypt() {
+        test("cbc","aes128");
+        test("cbc","aes192");
+        test("cbc","aes256");
+        test("cbc","des");
+
+        test("ecb","aes128");
+        test("ecb","aes192");
+        test("ecb","aes256");
+        test("ecb","des");
+
+        test("cfb","aes128");
+        test("cfb","aes192");
+        test("cfb","aes256");
+        test("cfb","des");
+
+        test("ofb","aes128");
+        test("ofb","aes192");
+        test("ofb","aes256");
+        test("ofb","des");
     }
 
-    @Test
-    public void encryptECB() {
-        String mode = "ecb";
-        EncryptionModeHelper encryptionModeHelper = new EncryptionModeHelper(mode);
 
-        String secret = RandomStringUtils.randomAlphanumeric(1000);;
-        String pass = "mipassss";
-        byte[] data = encryptionModeHelper.encrypt(secret.getBytes(), pass, "aes128");
-
-        EncryptionModeHelper decryptionModeHelper = new EncryptionModeHelper(mode);
-        byte[] result = decryptionModeHelper.decrypt(data, pass, "aes128");
-        assertEquals(secret, new String(result));
-    }
-
-    @Test
-    public void encryptCFB() throws IOException {
-        EncryptionModeHelper encryptionModeHelper = new EncryptionModeHelper("cfb");
-
-        String secret = RandomStringUtils.randomAlphanumeric(1000);
-        String pass = "mipass";
-        byte[] data = encryptionModeHelper.encrypt(secret.getBytes(), pass, "aes128");
-
-        EncryptionModeHelper decryptionModeHelper = new EncryptionModeHelper("cfb");
-        byte[] result = decryptionModeHelper.decrypt(data, pass, "aes128");
-        assertEquals(secret, new String(result));
-    }
-
-    @Test
-    public void encryptOFB() {
-        String mode = "ofb";
+    private void test(String mode, String scheme){
         EncryptionModeHelper encryptionModeHelper = new EncryptionModeHelper(mode);
 
         String secret = RandomStringUtils.randomAlphanumeric(1000);;
         String pass = "mipass";
-        byte[] data = encryptionModeHelper.encrypt(secret.getBytes(), pass, "aes128");
+        byte[] data = encryptionModeHelper.encrypt(secret.getBytes(), pass, scheme);
 
         EncryptionModeHelper decryptionModeHelper = new EncryptionModeHelper(mode);
-        byte[] result = decryptionModeHelper.decrypt(data, pass, "aes128");
+
+        byte[] result = decryptionModeHelper.decrypt(data, pass, scheme);
         assertEquals(secret, new String(result));
     }
 

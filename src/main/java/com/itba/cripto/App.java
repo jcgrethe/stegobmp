@@ -5,11 +5,16 @@ import com.itba.cripto.Helpers.Factories.AlgorithmsFactory;
 import com.itba.cripto.Helpers.FileManager.FileHelper;
 import com.itba.cripto.Interfaces.SteganographyAlgorithm;
 import com.itba.cripto.Models.Image;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.Arrays;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBYTESSIZE;
@@ -25,6 +30,8 @@ public class App {
             encryptionModeHelper = new EncryptionModeHelper(getEncryptionMode(cmd));
         }
 
+        String key = cmd.getOptionValue("pass");
+
         if (cmd.hasOption("embed")) {
             FileHelper fileHelper = FileHelper.builder()
                     .inPath(cmd.getOptionValue("in"))
@@ -35,12 +42,25 @@ public class App {
             Image image = fileHelper.getImage();
             byte[] fileToHide = fileHelper.getText().getBytes();
 
-            ByteBuffer hiddenFile = ByteBuffer.allocate(fileToHide.length + 4);
 
+            byte[] data;
+            ByteBuffer hiddenFile = ByteBuffer.allocate(fileToHide.length + 4);
             hiddenFile.putInt(fileToHide.length);
             hiddenFile.put(fileToHide);
 
-            byte[] data = steganographyAlgorithm.hide(image.getImageData(), hiddenFile.array());
+            if (key != null) {
+
+                byte[] encrypt = encryptionModeHelper.encrypt(hiddenFile.array(), key, getEncryptionAlgorithm(cmd));
+
+                ByteBuffer hiddenEncryptedFile = ByteBuffer.allocate(encrypt.length + 4);
+                hiddenEncryptedFile.putInt(encrypt.length);
+                hiddenEncryptedFile.put(encrypt);
+
+                data = steganographyAlgorithm.hide(image.getImageData(), hiddenEncryptedFile.array());
+
+            } else {
+                data = steganographyAlgorithm.hide(image.getImageData(), hiddenFile.array());
+            }
 
             byte[] imageData = new byte[data.length + image.getImageHeader().length];
             System.arraycopy(image.getImageHeader(), 0, imageData, 0, image.getImageHeader().length);
@@ -54,7 +74,6 @@ public class App {
                     .outPath(cmd.getOptionValue("out"))
                     .imagePath(cmd.getOptionValue("p"))
                     .build();
-            String key = cmd.getOptionValue("pass");
 
             Image image = fileHelper.getImage();
             byte[] data = steganographyAlgorithm.looking(image.getImageData());

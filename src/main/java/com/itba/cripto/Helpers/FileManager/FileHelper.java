@@ -5,10 +5,15 @@ import lombok.Builder;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.ByteBuffer;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Builder
 public class FileHelper {
@@ -30,6 +35,14 @@ public class FileHelper {
         return Files.readAllLines(path).get(0);
     }
 
+    public String getExtention(){
+        Path path = Paths.get(inPath);
+        String[] t1 = path.toString().split("/");
+        String[] t4 = t1[t1.length-1].split("\\.");
+        String fileExtention = t4[t4.length-1];
+        return fileExtention;
+    }
+
     public void saveImage(Image image) throws IOException {
         FileOutputStream fos = new FileOutputStream(outPath);
         byte[] allByteArray = new byte[image.getImageHeader().length + image.getImageData().length];
@@ -43,6 +56,22 @@ public class FileHelper {
 
     public void saveData(byte[] data) throws IOException {
         FileOutputStream fos = new FileOutputStream(outPath);
+        fos.write(data);
+
+    }
+
+    public void saveDataLooking(byte[] data,String extention) throws IOException{
+        Path path = Paths.get(outPath);
+        String[] t1 = path.toString().split("/");
+        String[] t4 = t1[t1.length-1].split("\\.");
+        t4[t4.length-1] = extention;
+        String file = String.join(".", t4);
+        t1[t1.length-1] = file;
+        String outPathResp = String.join("/", t1);
+
+        Path out = Paths.get(outPathResp.trim());
+
+        FileOutputStream fos = new FileOutputStream(String.valueOf(out));
         fos.write(data);
 
     }

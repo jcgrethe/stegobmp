@@ -15,7 +15,6 @@ import org.apache.commons.cli.ParseException;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBYTESSIZE;
@@ -41,16 +40,30 @@ public class App {
                     .build();
 
             Image image = fileHelper.getImage();
-            byte[] extention = ("." + fileHelper.getExtention()+"\0").getBytes();
-            int extentionSize = extention.length;
-            byte[] fileToHide = fileHelper.getText().getBytes();
+            byte[] fileToHide = fileHelper.getText().getBytes("UTF-8");
+            byte[] size = ByteBuffer.allocate(4).putInt(fileToHide.length).array();
+            byte[] file = ByteBuffer.allocate(fileToHide.length).put(fileToHide).array();
+            byte[] hiddenFile = new byte[size.length + file.length];
+            System.arraycopy(size, 0, hiddenFile, 0, size.length);
+            System.arraycopy(file, 0, hiddenFile, size.length, file.length);
 
+<<<<<<< HEAD
+            String fileEncrypted = encryptionModeHelper.encrypt(hiddenFile,cmd.getOptionValue("pass"),cmd.getOptionValue("a"));
+
+            byte[] sizeEnc = ByteBuffer.allocate(4).putInt(fileEncrypted.getBytes().length).array();
+            byte[] fileEnc = ByteBuffer.allocate(fileEncrypted.getBytes().length).put(file).array();
+            byte[] cipherText = new byte[sizeEnc.length + fileEnc.length];
+            System.arraycopy(sizeEnc, 0, cipherText, 0, sizeEnc.length);
+            System.arraycopy(fileEnc, 0, cipherText, sizeEnc.length, fileEnc.length);
+
+            byte[] data = steganographyAlgorithm.hide(image.getImageData(), cipherText);
+
+=======
 
             byte[] data;
-            ByteBuffer hiddenFile = ByteBuffer.allocate(fileToHide.length + 4 + extentionSize);
-            hiddenFile.putInt(fileToHide.length + extentionSize);
+            ByteBuffer hiddenFile = ByteBuffer.allocate(fileToHide.length + 4);
+            hiddenFile.putInt(fileToHide.length);
             hiddenFile.put(fileToHide);
-            hiddenFile.put(extention);
 
             if (key != null) {
 
@@ -59,11 +72,13 @@ public class App {
                 ByteBuffer hiddenEncryptedFile = ByteBuffer.allocate(encrypt.length + 4);
                 hiddenEncryptedFile.putInt(encrypt.length);
                 hiddenEncryptedFile.put(encrypt);
+
                 data = steganographyAlgorithm.hide(image.getImageData(), hiddenEncryptedFile.array());
 
             } else {
                 data = steganographyAlgorithm.hide(image.getImageData(), hiddenFile.array());
             }
+>>>>>>> dd957c86b4893e3af8c8e80ba646b929eec0971e
 
             byte[] imageData = new byte[data.length + image.getImageHeader().length];
             System.arraycopy(image.getImageHeader(), 0, imageData, 0, image.getImageHeader().length);
@@ -90,15 +105,9 @@ public class App {
                 imageSizeByte.flip();
                 int imageSize = imageSizeByte.getInt();
 
-                String[] fullData = new String(Arrays.copyOfRange(dec, 4, imageSize + 4), StandardCharsets.UTF_8)
-                        .split("\\.");
-                String extention = fullData[fullData.length-1];
-                fileHelper.saveDataLooking(Arrays.copyOfRange(dec, 4, imageSize + 4 - extention.getBytes().length-1),extention);
+                fileHelper.saveData(Arrays.copyOfRange(dec, 4, imageSize + 4));
             } else {
-                String[] fullData = new String(data, StandardCharsets.UTF_8)
-                        .split("\\.");
-                String extention = fullData[fullData.length-1];
-                fileHelper.saveDataLooking(Arrays.copyOfRange(data, 0, data.length - extention.getBytes().length-1),extention);
+                fileHelper.saveData(data);
             }
         } else throw new IllegalArgumentException("embed extract");
 

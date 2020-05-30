@@ -104,7 +104,7 @@ public class EncryptionModeHelper {
             secretKey = new SecretKeySpec(both[KEY_IDX], "AES");
     }
 
-    public String encrypt(String strToEncrypt, String secret, String scheme) {
+    public String encrypt(byte[] strToEncrypt, String secret, String scheme) {
         try {
             String mode;
             if (scheme.compareTo(Constants.ConstantsValues.DES) == 0)
@@ -117,7 +117,7 @@ public class EncryptionModeHelper {
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey, iv);
             else
                 cipher.init(Cipher.ENCRYPT_MODE, secretKey);
-            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt.getBytes("UTF-8")));
+            return Base64.getEncoder().encodeToString(cipher.doFinal(strToEncrypt));
         } catch (Exception e) {
             System.out.println("Error while encrypting: " + e.toString());
         }

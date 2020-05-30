@@ -33,14 +33,23 @@ public class App {
                     .build();
 
             Image image = fileHelper.getImage();
-            byte[] fileToHide = fileHelper.getText().getBytes();
+            byte[] fileToHide = fileHelper.getText().getBytes("UTF-8");
+            byte[] size = ByteBuffer.allocate(4).putInt(fileToHide.length).array();
+            byte[] file = ByteBuffer.allocate(fileToHide.length).put(fileToHide).array();
+            byte[] hiddenFile = new byte[size.length + file.length];
+            System.arraycopy(size, 0, hiddenFile, 0, size.length);
+            System.arraycopy(file, 0, hiddenFile, size.length, file.length);
 
-            ByteBuffer hiddenFile = ByteBuffer.allocate(fileToHide.length + 4);
+            String fileEncrypted = encryptionModeHelper.encrypt(hiddenFile,cmd.getOptionValue("pass"),cmd.getOptionValue("a"));
 
-            hiddenFile.putInt(fileToHide.length);
-            hiddenFile.put(fileToHide);
+            byte[] sizeEnc = ByteBuffer.allocate(4).putInt(fileEncrypted.getBytes().length).array();
+            byte[] fileEnc = ByteBuffer.allocate(fileEncrypted.getBytes().length).put(file).array();
+            byte[] cipherText = new byte[sizeEnc.length + fileEnc.length];
+            System.arraycopy(sizeEnc, 0, cipherText, 0, sizeEnc.length);
+            System.arraycopy(fileEnc, 0, cipherText, sizeEnc.length, fileEnc.length);
 
-            byte[] data = steganographyAlgorithm.hide(image.getImageData(), hiddenFile.array());
+            byte[] data = steganographyAlgorithm.hide(image.getImageData(), cipherText);
+
 
             byte[] imageData = new byte[data.length + image.getImageHeader().length];
             System.arraycopy(image.getImageHeader(), 0, imageData, 0, image.getImageHeader().length);

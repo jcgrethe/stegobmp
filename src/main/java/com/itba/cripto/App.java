@@ -13,16 +13,22 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBYTESSIZE;
 
 
 public class App {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException, InvalidAlgorithmParameterException {
 
         CommandLine cmd = getOptions(args);
         SteganographyAlgorithm steganographyAlgorithm = AlgorithmsFactory.type(cmd.getOptionValue("steg"));
@@ -98,7 +104,7 @@ public class App {
                 String[] fullData = new String(data, StandardCharsets.UTF_8)
                         .split("\\.");
                 String extention = fullData[fullData.length-1];
-                fileHelper.saveDataLooking(Arrays.copyOfRange(data, 0, data.length - extention.getBytes().length-1),extention);
+                fileHelper.saveDataLooking(Arrays.copyOfRange(data, 0, data.length - extention.getBytes().length-1),"bmp");
             }
         } else throw new IllegalArgumentException("embed extract");
 

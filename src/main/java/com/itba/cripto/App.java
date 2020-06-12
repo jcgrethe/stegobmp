@@ -47,9 +47,9 @@ public class App {
                     .build();
 
             Image image = fileHelper.getImage();
-            byte[] extention = ("." + fileHelper.getExtention()+"\0").getBytes();
+            byte[] extention = ("." + fileHelper.getExtention() + "\0").getBytes();
             int extentionSize = extention.length;
-            byte[] fileToHide = fileHelper.getText().getBytes();
+            byte[] fileToHide = fileHelper.getText();
 
 
             byte[] data;
@@ -98,8 +98,8 @@ public class App {
 
                 String[] fullData = new String(Arrays.copyOfRange(dec, 4, imageSize + 4), StandardCharsets.UTF_8)
                         .split("\\.");
-                String extention = fullData[fullData.length-1];
-                fileHelper.saveDataLooking(Arrays.copyOfRange(dec, 4, imageSize + 4 - extention.getBytes().length-1),extention);
+                String extention = fullData[fullData.length - 1];
+                fileHelper.saveDataLooking(Arrays.copyOfRange(dec, 4, imageSize + 4 - extention.getBytes().length - 1), extention);
             } else {
                 fileHelper.saveData(data);
             }

@@ -56,8 +56,10 @@ public class App {
             ByteBuffer hiddenFile = ByteBuffer.allocate(fileToHide.length + 4 + extentionSize + 2);
             hiddenFile.putInt(fileToHide.length);
             hiddenFile.put(fileToHide);
-            hiddenFile.put(".".getBytes());
-            hiddenFile.put(extention);
+            if(extention.length != 0) {
+                hiddenFile.put(".".getBytes());
+                hiddenFile.put(extention);
+            }
             hiddenFile.put((byte) 0);
 
             if (key != null) {
@@ -98,7 +100,8 @@ public class App {
                 imageSizeByte.flip();
                 int imageSize = imageSizeByte.getInt();
 
-                ByteBuffer extension = ByteBuffer.allocate(100);
+                ByteBuffer extension = ByteBuffer.allocate(10);
+                int count = 0;
                 int extensionPointer = imageSize + 4;
                 do{
                     byte nextByte = dec[extensionPointer];
@@ -106,9 +109,11 @@ public class App {
                     if(nextByte == 0){
                         break;
                     }
+                    count++;
                     extension.put(nextByte);
                 }while (true);
-                fileHelper.saveDataLooking(Arrays.copyOfRange(dec, 4, imageSize + 4), new String(extension.array()));
+                fileHelper.saveDataLooking(Arrays.copyOfRange(dec, 4, imageSize + 4),
+                        new String(Arrays.copyOfRange(extension.array(),0,count)));
 
             } else {
                 String extension = steganographyAlgorithm.getExtension(image.getImageData());

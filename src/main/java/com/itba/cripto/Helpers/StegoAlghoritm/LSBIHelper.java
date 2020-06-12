@@ -29,15 +29,17 @@ public class LSBIHelper implements SteganographyAlgorithm {
 
     @Override
     public String getExtension(byte[] img) {
-        ByteBuffer extension = ByteBuffer.allocate(100);
+        int count = 0;
+        ByteBuffer extension = ByteBuffer.allocate(10);
         do{
             byte nextByte = getNextByte(img, jump);
             if(nextByte == 0){
                 break;
             }
+            count++;
             extension.put(nextByte);
         }while (true);
-        return new String(extension.array());
+        return new String(Arrays.copyOfRange(extension.array(),0,count));
     }
 
     public byte[] hide(byte[] img, byte[] file) {

@@ -2,6 +2,7 @@ package com.itba.cripto.Helpers.FileManager;
 
 import com.itba.cripto.Models.Image;
 import lombok.Builder;
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.FileInputStream;
@@ -31,11 +32,7 @@ public class FileHelper {
     }
 
     public String getExtention() {
-        Path path = Paths.get(inPath);
-        String[] t1 = path.toString().split("/");
-        String[] t4 = t1[t1.length - 1].split("\\.");
-        String fileExtention = t4[t4.length - 1];
-        return fileExtention;
+        return FilenameUtils.getExtension(inPath);
     }
 
     public void saveImage(Image image) throws IOException {
@@ -56,16 +53,9 @@ public class FileHelper {
     }
 
     public void saveDataLooking(byte[] data, String extention) throws IOException {
-        Path path = Paths.get(outPath);
-        String[] t1 = path.toString().split("/");
-        String[] t4 = t1[t1.length - 1].split("\\.");
-        String aux = t4[t4.length - 1] + extention;
-        t1[t1.length - 1] = aux;
-        String outPathResp = String.join("/", t1);
+        String out = outPath + extention;
 
-        Path out = Paths.get(outPathResp.trim());
-
-        FileOutputStream fos = new FileOutputStream(String.valueOf(out));
+        FileOutputStream fos = new FileOutputStream(out);
         fos.write(data);
 
     }

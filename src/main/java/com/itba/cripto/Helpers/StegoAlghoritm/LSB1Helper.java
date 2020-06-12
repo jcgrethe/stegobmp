@@ -6,6 +6,7 @@ import com.itba.cripto.Interfaces.SteganographyAlgorithm;
 
 import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBYTESSIZE;
 
@@ -18,15 +19,17 @@ public class LSB1Helper implements SteganographyAlgorithm {
 
     @Override
     public String getExtension(byte[] img) {
-        ByteBuffer extension = ByteBuffer.allocate(100);
+        int count = 0;
+        ByteBuffer extension = ByteBuffer.allocate(10);
         do{
             byte nextByte = getNextByte(img);
             if(nextByte == 0){
                 break;
             }
+            count++;
             extension.put(nextByte);
         }while (true);
-        return new String(extension.array());
+        return new String(Arrays.copyOfRange(extension.array(),0,count));
     }
 
     public byte[] hide(byte[] img, byte[] file) {

@@ -47,16 +47,18 @@ public class App {
                     .build();
 
             Image image = fileHelper.getImage();
-            byte[] extention = (fileHelper.getExtention() + "\0").getBytes();
+            byte[] extention = (fileHelper.getExtention()).getBytes();
             int extentionSize = extention.length;
             byte[] fileToHide = fileHelper.getText();
 
 
             byte[] data;
-            ByteBuffer hiddenFile = ByteBuffer.allocate(fileToHide.length + 4 + extentionSize);
+            ByteBuffer hiddenFile = ByteBuffer.allocate(fileToHide.length + 4 + extentionSize + 2);
             hiddenFile.putInt(fileToHide.length);
             hiddenFile.put(fileToHide);
+            hiddenFile.put(".".getBytes());
             hiddenFile.put(extention);
+            hiddenFile.put((byte) 0);
 
             if (key != null) {
 

@@ -8,6 +8,7 @@ import com.itba.cripto.Interfaces.SteganographyAlgorithm;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -23,6 +24,21 @@ public class LSBIHelper implements SteganographyAlgorithm {
     int currentTextByte = 0;
     int keySize = 6;
     int count = 0;
+    private int jump;
+
+
+    @Override
+    public String getExtension(byte[] img) {
+        ByteBuffer extension = ByteBuffer.allocate(100);
+        do{
+            byte nextByte = getNextByte(img, jump);
+            if(nextByte == 0){
+                break;
+            }
+            extension.put(nextByte);
+        }while (true);
+        return new String(extension.array());
+    }
 
     public byte[] hide(byte[] img, byte[] file) {
         return null;
@@ -33,7 +49,7 @@ public class LSBIHelper implements SteganographyAlgorithm {
         RC4ModeHelper rc4 = new RC4ModeHelper();
         final byte[] key = Arrays.copyOfRange(img, 0, keySize);
         byte[] data = Arrays.copyOfRange(img, keySize, img.length);
-        int jump = getJump(img[0]);
+        jump = getJump(img[0]);
 
         int imageSize;
         ByteBuffer imageSizeByte = ByteBuffer.allocate(IMAGEBYTESSIZE);

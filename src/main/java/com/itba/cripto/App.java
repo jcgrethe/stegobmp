@@ -47,14 +47,14 @@ public class App {
                     .build();
 
             Image image = fileHelper.getImage();
-            byte[] extention = ("." + fileHelper.getExtention() + "\0").getBytes();
+            byte[] extention = (fileHelper.getExtention() + "\0").getBytes();
             int extentionSize = extention.length;
             byte[] fileToHide = fileHelper.getText();
 
 
             byte[] data;
             ByteBuffer hiddenFile = ByteBuffer.allocate(fileToHide.length + 4 + extentionSize);
-            hiddenFile.putInt(fileToHide.length + extentionSize);
+            hiddenFile.putInt(fileToHide.length);
             hiddenFile.put(fileToHide);
             hiddenFile.put(extention);
 
@@ -96,12 +96,21 @@ public class App {
                 imageSizeByte.flip();
                 int imageSize = imageSizeByte.getInt();
 
-                String[] fullData = new String(Arrays.copyOfRange(dec, 4, imageSize + 4), StandardCharsets.UTF_8)
-                        .split("\\.");
-                String extention = fullData[fullData.length - 1];
-                fileHelper.saveDataLooking(Arrays.copyOfRange(dec, 4, imageSize + 4 - extention.getBytes().length - 1), extention);
+                ByteBuffer extension = ByteBuffer.allocate(100);
+                int extensionPointer = imageSize + 4;
+                do{
+                    byte nextByte = dec[extensionPointer];
+                    extensionPointer++;
+                    if(nextByte == 0){
+                        break;
+                    }
+                    extension.put(nextByte);
+                }while (true);
+                fileHelper.saveDataLooking(Arrays.copyOfRange(dec, 4, imageSize + 4), new String(extension.array()));
+
             } else {
-                fileHelper.saveData(data);
+                String extension = steganographyAlgorithm.getExtension(image.getImageData());
+                fileHelper.saveDataLooking(data, extension);
             }
         } else throw new IllegalArgumentException("embed extract");
 

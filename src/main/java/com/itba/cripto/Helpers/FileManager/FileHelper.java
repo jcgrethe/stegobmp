@@ -59,7 +59,7 @@ public class FileHelper {
         Path path = Paths.get(outPath);
         String[] t1 = path.toString().split("/");
         String[] t4 = t1[t1.length - 1].split("\\.");
-        String aux = t4[t4.length - 1] + "." + extention;
+        String aux = t4[t4.length - 1] + extention;
         t1[t1.length - 1] = aux;
         String outPathResp = String.join("/", t1);
 

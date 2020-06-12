@@ -16,13 +16,12 @@ public class Image {
     private byte[] imageData;
     private byte[] imageHeader;
 
-
     public Image(String path) throws IOException {
         if (path == null)
             throw new IllegalArgumentException();
         byte[] imageArray = IOUtils.toByteArray(new FileInputStream(path));
-        imageData = Arrays.copyOfRange(imageArray, HEADER_SIZE, imageArray.length);
         imageHeader = Arrays.copyOfRange(imageArray, 0, HEADER_SIZE);
+        imageData = Arrays.copyOfRange(imageArray, HEADER_SIZE, imageArray.length);
     }
 
 

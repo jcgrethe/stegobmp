@@ -32,6 +32,7 @@ public class FileHelper {
 
     public String getText() throws IOException {
         Path path = Paths.get(inPath);
+        //TODO: revisar
         return Files.readAllLines(path).get(0);
     }
 

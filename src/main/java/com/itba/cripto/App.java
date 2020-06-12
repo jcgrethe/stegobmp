@@ -101,10 +101,7 @@ public class App {
                 String extention = fullData[fullData.length-1];
                 fileHelper.saveDataLooking(Arrays.copyOfRange(dec, 4, imageSize + 4 - extention.getBytes().length-1),extention);
             } else {
-                String[] fullData = new String(data, StandardCharsets.UTF_8)
-                        .split("\\.");
-                String extention = fullData[fullData.length-1];
-                fileHelper.saveDataLooking(Arrays.copyOfRange(data, 0, data.length - extention.getBytes().length-1),"bmp");
+                fileHelper.saveData(data);
             }
         } else throw new IllegalArgumentException("embed extract");
 

@@ -84,7 +84,6 @@ public class LSB1Helper implements SteganographyAlgorithm {
         }else {
             aux = current;
         }
-
         return aux;
     }
 

@@ -31,13 +31,35 @@ public class LSBIHelper implements SteganographyAlgorithm {
     RC4ModeHelper rc4;
     private String extensionString = ".png";
 
+    int bitPosition = 8;
+    int fileBytePosition = 0;
+    int currentImageByte = 0;
+
     @Override
     public String getExtension(byte[] img) {
       return extensionString;
     }
 
-    public byte[] hide(byte[] img, byte[] file) {
-        return null;
+    public byte[] hide(byte[] img, byte[] file) throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
+
+        rc4 = new RC4ModeHelper();
+        key = Arrays.copyOfRange(img, 0, keySize);
+        jump = getJump(img[0]);
+
+        byte[] cipherText = rc4.encrypt(file,key);
+        byte[] data = Arrays.copyOfRange(img, keySize, img.length);
+
+        while(fileBytePosition < cipherText.length){
+            data[currentImageByte] = setNextByte(data[currentImageByte],cipherText);
+            currentImageByte += jump;
+            if (currentImageByte >= data.length - 1) {
+                currentImageByte = currentImageByte % (data.length + keySize - 1);
+            }
+        }
+        byte[] resp = new byte[img.length];
+        System.arraycopy(key,0,resp,0,key.length);
+        System.arraycopy(data,0,resp,key.length,data.length);
+        return resp;
     }
 
     public byte[] looking(byte[] img) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException {
@@ -55,6 +77,7 @@ public class LSBIHelper implements SteganographyAlgorithm {
         }
         imageSizeByte.flip();
         imageSize = ByteBuffer.wrap(rc4.decrypt(imageSizeByte.array(), key)).getInt();
+        System.out.println(imageSize);
 
         byte[] resp = new byte[imageSize];
 
@@ -113,4 +136,18 @@ public class LSBIHelper implements SteganographyAlgorithm {
         return key;
     }
 
+    private byte setNextByte(byte current, byte[] file) {
+        byte aux;
+        if(file.length > fileBytePosition) {
+            aux = Convertions.ChangeBit(current, 0, Convertions.getBit(--bitPosition, file[fileBytePosition]));
+
+            if (bitPosition == 0) {
+                bitPosition = 8;
+                fileBytePosition++;
+            }
+        }else {
+            aux = current;
+        }
+        return aux;
+    }
 }

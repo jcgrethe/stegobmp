@@ -4,11 +4,12 @@ package com.itba.cripto.Helpers.StegoAlghoritm;
 import com.itba.cripto.Helpers.EncryptionModes.RC4ModeHelper;
 import com.itba.cripto.Helpers.Utils.Convertions;
 import com.itba.cripto.Interfaces.SteganographyAlgorithm;
+import lombok.Getter;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-import java.io.ByteArrayOutputStream;
+
 import java.nio.ByteBuffer;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
@@ -25,21 +26,14 @@ public class LSBIHelper implements SteganographyAlgorithm {
     int keySize = 6;
     int count = 0;
     private int jump;
-
+    int auxKeyPos;
+    byte[] key;
+    RC4ModeHelper rc4;
+    private String extensionString = ".png";
 
     @Override
     public String getExtension(byte[] img) {
-        int count = 0;
-        ByteBuffer extension = ByteBuffer.allocate(10);
-        do{
-            byte nextByte = getNextByte(img, jump);
-            if(nextByte == 0){
-                break;
-            }
-            count++;
-            extension.put(nextByte);
-        }while (true);
-        return new String(Arrays.copyOfRange(extension.array(),0,count));
+      return extensionString;
     }
 
     public byte[] hide(byte[] img, byte[] file) {
@@ -48,8 +42,8 @@ public class LSBIHelper implements SteganographyAlgorithm {
 
     public byte[] looking(byte[] img) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException {
 
-        RC4ModeHelper rc4 = new RC4ModeHelper();
-        final byte[] key = Arrays.copyOfRange(img, 0, keySize);
+        rc4 = new RC4ModeHelper();
+        key = Arrays.copyOfRange(img, 0, keySize);
         byte[] data = Arrays.copyOfRange(img, keySize, img.length);
         jump = getJump(img[0]);
 
@@ -68,10 +62,24 @@ public class LSBIHelper implements SteganographyAlgorithm {
             resp[currentTextByte++] = getNextByte(data, jump);
         }
 
-        ByteBuffer total = ByteBuffer.allocate(imageSize + 4);
+        ByteBuffer total = ByteBuffer.allocate(imageSize + 4 + 10);
         total.put(imageSizeByte.array());
         total.put(resp);
         byte[] decrypt = rc4.decrypt(total.array(), key);
+
+/*        int count = 0;
+        ByteBuffer extension = ByteBuffer.allocate(10);
+        do{
+            byte nextByte = getNextByte(data, jump);
+            total.put(nextByte);
+            nextByte = rc4.decrypt(total.array(), key)[total.array().length - 1];
+            if(nextByte == 0){
+                break;
+            }
+            count++;
+            extension.put(nextByte);
+        }while (true);
+        extensionString = new String(Arrays.copyOfRange(extension.array(),0,count));*/
         return Arrays.copyOfRange(decrypt, IMAGEBYTESSIZE, decrypt.length);
     }
 
@@ -82,10 +90,7 @@ public class LSBIHelper implements SteganographyAlgorithm {
             buffer.append(Convertions.getBit(0, data[currentByte]));
             currentByte = (currentByte + jump);
             if (currentByte >= data.length - 1) {
-                System.out.println(count);
-                System.out.println(currentByte);
-                currentByte = currentByte - data.length;
-                System.out.println(currentByte);
+                currentByte = currentByte % (data.length + keySize - 1);
             }
         }
         //uso parse int en binario si es unsigned. Byte.parse me lo devuelve signed.
@@ -99,6 +104,13 @@ public class LSBIHelper implements SteganographyAlgorithm {
             }
         }
         return 256;
+    }
+
+    public static byte[] cyclicLeftShift(byte[] key){
+        byte last = key[key.length-1];
+        System.arraycopy(key, 0, key, 1, key.length-1 );
+        key[0] = last;
+        return key;
     }
 
 }

@@ -8,9 +8,6 @@ import org.apache.commons.io.IOUtils;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 
 @Builder
 public class FileHelper {
@@ -33,17 +30,6 @@ public class FileHelper {
 
     public String getExtention() {
         return FilenameUtils.getExtension(inPath);
-    }
-
-    public void saveImage(Image image) throws IOException {
-        FileOutputStream fos = new FileOutputStream(outPath);
-        byte[] allByteArray = new byte[image.getImageHeader().length + image.getImageData().length];
-
-        ByteBuffer buff = ByteBuffer.wrap(allByteArray);
-        buff.put(image.getImageHeader());
-        buff.put(image.getImageData());
-
-        fos.write(buff.array());
     }
 
     public void saveData(byte[] data) throws IOException {

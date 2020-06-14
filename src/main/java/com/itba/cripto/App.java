@@ -5,20 +5,13 @@ import com.itba.cripto.Helpers.Factories.AlgorithmsFactory;
 import com.itba.cripto.Helpers.FileManager.FileHelper;
 import com.itba.cripto.Interfaces.SteganographyAlgorithm;
 import com.itba.cripto.Models.Image;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
 import java.security.InvalidAlgorithmParameterException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -56,7 +49,7 @@ public class App {
             ByteBuffer hiddenFile = ByteBuffer.allocate(fileToHide.length + 4 + extentionSize + 2);
             hiddenFile.putInt(fileToHide.length);
             hiddenFile.put(fileToHide);
-            if(extention.length != 0) {
+            if (extention.length != 0) {
                 hiddenFile.put(".".getBytes());
                 hiddenFile.put(extention);
             }
@@ -103,17 +96,17 @@ public class App {
                 ByteBuffer extension = ByteBuffer.allocate(10);
                 int count = 0;
                 int extensionPointer = imageSize + 4;
-                do{
+                do {
                     byte nextByte = dec[extensionPointer];
                     extensionPointer++;
-                    if(nextByte == 0){
+                    if (nextByte == 0) {
                         break;
                     }
                     count++;
                     extension.put(nextByte);
-                }while (true);
+                } while (true);
                 fileHelper.saveDataLooking(Arrays.copyOfRange(dec, 4, imageSize + 4),
-                        new String(Arrays.copyOfRange(extension.array(),0,count)));
+                        new String(Arrays.copyOfRange(extension.array(), 0, count)));
 
             } else {
                 String extension = steganographyAlgorithm.getExtension(image.getImageData());

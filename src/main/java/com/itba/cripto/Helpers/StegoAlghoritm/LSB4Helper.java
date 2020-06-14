@@ -4,7 +4,6 @@ package com.itba.cripto.Helpers.StegoAlghoritm;
 import com.itba.cripto.Helpers.Utils.Convertions;
 import com.itba.cripto.Interfaces.SteganographyAlgorithm;
 
-import java.io.ByteArrayOutputStream;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.Arrays;
@@ -14,24 +13,24 @@ import static com.itba.cripto.Helpers.Utils.Convertions.getBit;
 
 public class LSB4Helper implements SteganographyAlgorithm {
 
-    int currentByte = 0;
-    int bitPosition = 8;
-    int fileBytePosition = 0;
+    private int currentByte = 0;
+    private int bitPosition = 8;
+    private int fileBytePosition = 0;
 
     @Override
     public String getExtension(byte[] img) {
 
         int count = 0;
         ByteBuffer extension = ByteBuffer.allocate(10);
-        do{
+        do {
             byte nextByte = getNextByte(img);
-            if(nextByte == 0){
+            if (nextByte == 0) {
                 break;
             }
             count++;
             extension.put(nextByte);
-        }while (true);
-        return new String(Arrays.copyOfRange(extension.array(),0,count));
+        } while (true);
+        return new String(Arrays.copyOfRange(extension.array(), 0, count));
     }
 
     public byte[] hide(byte[] img, byte[] file) {
@@ -80,8 +79,8 @@ public class LSB4Helper implements SteganographyAlgorithm {
 
     private byte setNextByte(byte current, byte[] file) {
         byte aux = current;
-        if(file.length > fileBytePosition) {
-            for (int i = 3; i >=0 ; i--) {
+        if (file.length > fileBytePosition) {
+            for (int i = 3; i >= 0; i--) {
                 aux = Convertions.ChangeBit(aux, i, Convertions.getBit(--bitPosition, file[fileBytePosition]));
             }
 
@@ -89,7 +88,7 @@ public class LSB4Helper implements SteganographyAlgorithm {
                 bitPosition = 8;
                 fileBytePosition++;
             }
-        }else {
+        } else {
             aux = current;
         }
 

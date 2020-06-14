@@ -2,6 +2,9 @@ package com.itba.cripto.Helpers.Constant;
 
 public class Constants {
 
+    private Constants() {
+    }
+
     public static class ConstantsValues {
 
         public static final String ENCRYPT = "-embed";
@@ -22,9 +25,7 @@ public class Constants {
         public static final String DES = "des";
 
         public static final int HEADER_SIZE = 54;
-        public static final int IMAGEBYTESSIZE=4;
+        public static final int IMAGEBYTESSIZE = 4;
 
     }
-
-    private Constants(){}
 }

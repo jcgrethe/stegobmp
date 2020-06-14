@@ -9,7 +9,7 @@ import java.security.NoSuchAlgorithmException;
 
 public interface SteganographyAlgorithm {
 
-    String getExtension(byte[] img);
+    String getExtension(byte[] img) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException;
 
     byte[] hide(byte[] img, byte[] file) throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException;
 

@@ -26,18 +26,33 @@ public class LSBIHelper implements SteganographyAlgorithm {
     int keySize = 6;
     int count = 0;
     private int jump;
-    int auxKeyPos;
     byte[] key;
     RC4ModeHelper rc4;
-    private String extensionString = ".png";
 
     int bitPosition = 8;
     int fileBytePosition = 0;
     int currentImageByte = 0;
 
+    int imageSize;
+    byte[] data;
+    ByteBuffer total;
+
     @Override
-    public String getExtension(byte[] img) {
-      return extensionString;
+    public String getExtension(byte[] img) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException {
+        int count = imageSize + 4;
+        ByteBuffer extension = ByteBuffer.allocate(100);
+        int size = 0;
+        do{
+            byte nextByte = getNextByte(data, jump);
+            total.put(nextByte);
+            nextByte = rc4.decrypt(total.array(), key)[count];
+            if(nextByte == 0){
+                break;
+            }
+            count++; size++;
+            extension.put(nextByte);
+        }while (true);
+        return new String(Arrays.copyOfRange(extension.array(),0,size));
     }
 
     public byte[] hide(byte[] img, byte[] file) throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException {
@@ -66,10 +81,9 @@ public class LSBIHelper implements SteganographyAlgorithm {
 
         rc4 = new RC4ModeHelper();
         key = Arrays.copyOfRange(img, 0, keySize);
-        byte[] data = Arrays.copyOfRange(img, keySize, img.length);
+        data = Arrays.copyOfRange(img, keySize, img.length);
         jump = getJump(img[0]);
 
-        int imageSize;
         ByteBuffer imageSizeByte = ByteBuffer.allocate(IMAGEBYTESSIZE);
 
         for (int i = 0; i < IMAGEBYTESSIZE; i++) {
@@ -77,7 +91,6 @@ public class LSBIHelper implements SteganographyAlgorithm {
         }
         imageSizeByte.flip();
         imageSize = ByteBuffer.wrap(rc4.decrypt(imageSizeByte.array(), key)).getInt();
-        System.out.println(imageSize);
 
         byte[] resp = new byte[imageSize];
 
@@ -85,24 +98,12 @@ public class LSBIHelper implements SteganographyAlgorithm {
             resp[currentTextByte++] = getNextByte(data, jump);
         }
 
-        ByteBuffer total = ByteBuffer.allocate(imageSize + 4 + 10);
+        total = ByteBuffer.allocate(imageSize + 4 + 10);
         total.put(imageSizeByte.array());
         total.put(resp);
         byte[] decrypt = rc4.decrypt(total.array(), key);
 
-/*        int count = 0;
-        ByteBuffer extension = ByteBuffer.allocate(10);
-        do{
-            byte nextByte = getNextByte(data, jump);
-            total.put(nextByte);
-            nextByte = rc4.decrypt(total.array(), key)[total.array().length - 1];
-            if(nextByte == 0){
-                break;
-            }
-            count++;
-            extension.put(nextByte);
-        }while (true);
-        extensionString = new String(Arrays.copyOfRange(extension.array(),0,count));*/
+
         return Arrays.copyOfRange(decrypt, IMAGEBYTESSIZE, decrypt.length);
     }
 
@@ -111,10 +112,7 @@ public class LSBIHelper implements SteganographyAlgorithm {
         count++;
         for (int j = 0; j < 8; j++) {
             buffer.append(Convertions.getBit(0, data[currentByte]));
-            currentByte = (currentByte + jump);
-            if (currentByte >= data.length - 1) {
-                currentByte = currentByte % (data.length + keySize - 1);
-            }
+            currentByte = (currentByte + jump) % (data.length + keySize - 1);
         }
         //uso parse int en binario si es unsigned. Byte.parse me lo devuelve signed.
         return (byte) Integer.parseInt(buffer.toString(), 2);
@@ -127,13 +125,6 @@ public class LSBIHelper implements SteganographyAlgorithm {
             }
         }
         return 256;
-    }
-
-    public static byte[] cyclicLeftShift(byte[] key){
-        byte last = key[key.length-1];
-        System.arraycopy(key, 0, key, 1, key.length-1 );
-        key[0] = last;
-        return key;
     }
 
     private byte setNextByte(byte current, byte[] file) {

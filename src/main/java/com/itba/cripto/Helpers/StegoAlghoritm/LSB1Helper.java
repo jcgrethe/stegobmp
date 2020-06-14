@@ -5,15 +5,31 @@ import com.itba.cripto.Helpers.Utils.Convertions;
 import com.itba.cripto.Interfaces.SteganographyAlgorithm;
 
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBYTESSIZE;
 
 public class LSB1Helper implements SteganographyAlgorithm {
 
-    int currentByte = 0;
-    int currentTextByte = 0;
-    int bitPosition = 8;
-    int fileBytePosition = 0;
+    private int currentByte = 0;
+    private int currentTextByte = 0;
+    private int bitPosition = 8;
+    private int fileBytePosition = 0;
+
+    @Override
+    public String getExtension(byte[] img) {
+        int count = 0;
+        ByteBuffer extension = ByteBuffer.allocate(10);
+        do {
+            byte nextByte = getNextByte(img);
+            if (nextByte == 0) {
+                break;
+            }
+            count++;
+            extension.put(nextByte);
+        } while (true);
+        return new String(Arrays.copyOfRange(extension.array(), 0, count));
+    }
 
     public byte[] hide(byte[] img, byte[] file) {
 
@@ -57,17 +73,16 @@ public class LSB1Helper implements SteganographyAlgorithm {
 
     private byte setNextByte(byte current, byte[] file) {
         byte aux;
-        if(file.length > fileBytePosition) {
+        if (file.length > fileBytePosition) {
             aux = Convertions.ChangeBit(current, 0, Convertions.getBit(--bitPosition, file[fileBytePosition]));
 
             if (bitPosition == 0) {
                 bitPosition = 8;
                 fileBytePosition++;
             }
-        }else {
+        } else {
             aux = current;
         }
-
         return aux;
     }
 

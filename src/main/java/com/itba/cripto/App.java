@@ -5,24 +5,23 @@ import com.itba.cripto.Helpers.Factories.AlgorithmsFactory;
 import com.itba.cripto.Helpers.FileManager.FileHelper;
 import com.itba.cripto.Interfaces.SteganographyAlgorithm;
 import com.itba.cripto.Models.Image;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.HelpFormatter;
-import org.apache.commons.cli.Option;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
+import org.apache.commons.cli.*;
 
+import javax.crypto.BadPaddingException;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 import java.io.IOException;
 import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
+import java.security.InvalidAlgorithmParameterException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 
 import static com.itba.cripto.Helpers.Constant.Constants.ConstantsValues.IMAGEBYTESSIZE;
 
 
 public class App {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, BadPaddingException, InvalidKeyException, NoSuchAlgorithmException, IllegalBlockSizeException, NoSuchPaddingException, InvalidAlgorithmParameterException {
 
         CommandLine cmd = getOptions(args);
         SteganographyAlgorithm steganographyAlgorithm = AlgorithmsFactory.type(cmd.getOptionValue("steg"));
@@ -41,16 +40,20 @@ public class App {
                     .build();
 
             Image image = fileHelper.getImage();
-            byte[] extention = ("." + fileHelper.getExtention()+"\0").getBytes();
+            byte[] extention = (fileHelper.getExtention()).getBytes();
             int extentionSize = extention.length;
-            byte[] fileToHide = fileHelper.getText().getBytes();
+            byte[] fileToHide = fileHelper.getText();
 
 
             byte[] data;
-            ByteBuffer hiddenFile = ByteBuffer.allocate(fileToHide.length + 4 + extentionSize);
-            hiddenFile.putInt(fileToHide.length + extentionSize);
+            ByteBuffer hiddenFile = ByteBuffer.allocate(fileToHide.length + 4 + extentionSize + 2);
+            hiddenFile.putInt(fileToHide.length);
             hiddenFile.put(fileToHide);
-            hiddenFile.put(extention);
+            if (extention.length != 0) {
+                hiddenFile.put(".".getBytes());
+                hiddenFile.put(extention);
+            }
+            hiddenFile.put((byte) 0);
 
             if (key != null) {
 
@@ -90,15 +93,24 @@ public class App {
                 imageSizeByte.flip();
                 int imageSize = imageSizeByte.getInt();
 
-                String[] fullData = new String(Arrays.copyOfRange(dec, 4, imageSize + 4), StandardCharsets.UTF_8)
-                        .split("\\.");
-                String extention = fullData[fullData.length-1];
-                fileHelper.saveDataLooking(Arrays.copyOfRange(dec, 4, imageSize + 4 - extention.getBytes().length-1),extention);
+                ByteBuffer extension = ByteBuffer.allocate(10);
+                int count = 0;
+                int extensionPointer = imageSize + 4;
+                do {
+                    byte nextByte = dec[extensionPointer];
+                    extensionPointer++;
+                    if (nextByte == 0) {
+                        break;
+                    }
+                    count++;
+                    extension.put(nextByte);
+                } while (true);
+                fileHelper.saveDataLooking(Arrays.copyOfRange(dec, 4, imageSize + 4),
+                        new String(Arrays.copyOfRange(extension.array(), 0, count)));
+
             } else {
-                String[] fullData = new String(data, StandardCharsets.UTF_8)
-                        .split("\\.");
-                String extention = fullData[fullData.length-1];
-                fileHelper.saveDataLooking(Arrays.copyOfRange(data, 0, data.length - extention.getBytes().length-1),extention);
+                String extension = steganographyAlgorithm.getExtension(image.getImageData());
+                fileHelper.saveDataLooking(data, extension);
             }
         } else throw new IllegalArgumentException("embed extract");
 

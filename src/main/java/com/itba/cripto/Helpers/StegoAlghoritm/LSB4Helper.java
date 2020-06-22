@@ -56,12 +56,21 @@ public class LSB4Helper implements SteganographyAlgorithm {
         imageSizeByte.flip();
         imageSize = imageSizeByte.getInt();
 
+        if (imageSize > (maxSize(img.length) - currentByte - 1) || imageSize <= 0) {
+            throw new IllegalArgumentException("Illegal size");
+        }
+
         byte[] resp = new byte[imageSize];
 
         for (int i = 0; i < imageSize; i++) {
             resp[currentTextByte++] = getNextByte(img);
         }
         return resp;
+    }
+
+    @Override
+    public long maxSize(int size) {
+        return size / 2;
     }
 
     public byte getNextByte(byte[] img) {

@@ -5,7 +5,13 @@ import com.itba.cripto.Helpers.Factories.AlgorithmsFactory;
 import com.itba.cripto.Helpers.FileManager.FileHelper;
 import com.itba.cripto.Interfaces.SteganographyAlgorithm;
 import com.itba.cripto.Models.Image;
-import org.apache.commons.cli.*;
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Option;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
@@ -54,18 +60,25 @@ public class App {
                 hiddenFile.put(extention);
             }
             hiddenFile.put((byte) 0);
+            byte[] hiddenFileArray = hiddenFile.array();
 
             if (key != null) {
 
-                byte[] encrypt = encryptionModeHelper.encrypt(hiddenFile.array(), key, getEncryptionAlgorithm(cmd));
+                byte[] encrypt = encryptionModeHelper.encrypt(hiddenFileArray, key, getEncryptionAlgorithm(cmd));
 
                 ByteBuffer hiddenEncryptedFile = ByteBuffer.allocate(encrypt.length + 4);
                 hiddenEncryptedFile.putInt(encrypt.length);
                 hiddenEncryptedFile.put(encrypt);
+                if (steganographyAlgorithm.maxSize(image.getImageData().length) < hiddenEncryptedFile.array().length) {
+                    throw new IllegalArgumentException("Max size exceeded");
+                }
                 data = steganographyAlgorithm.hide(image.getImageData(), hiddenEncryptedFile.array());
 
             } else {
-                data = steganographyAlgorithm.hide(image.getImageData(), hiddenFile.array());
+                if (steganographyAlgorithm.maxSize(image.getImageData().length) < hiddenFileArray.length) {
+                    throw new IllegalArgumentException("Max size exceeded");
+                }
+                data = steganographyAlgorithm.hide(image.getImageData(), hiddenFileArray);
             }
 
             byte[] imageData = new byte[data.length + image.getImageHeader().length];

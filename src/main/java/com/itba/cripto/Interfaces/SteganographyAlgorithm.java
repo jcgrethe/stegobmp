@@ -14,4 +14,6 @@ public interface SteganographyAlgorithm {
     byte[] hide(byte[] img, byte[] file) throws IllegalBlockSizeException, NoSuchPaddingException, BadPaddingException, NoSuchAlgorithmException, InvalidKeyException;
 
     byte[] looking(byte[] img) throws InvalidAlgorithmParameterException, NoSuchAlgorithmException, IllegalBlockSizeException, BadPaddingException, NoSuchPaddingException, InvalidKeyException;
+
+    long maxSize(int size);
 }

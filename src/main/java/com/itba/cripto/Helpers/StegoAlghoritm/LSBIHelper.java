@@ -110,6 +110,11 @@ public class LSBIHelper implements SteganographyAlgorithm {
         return Arrays.copyOfRange(decrypt, IMAGEBYTESSIZE, decrypt.length);
     }
 
+    @Override
+    public long maxSize(int size) {
+        return (size - keySize) / 8;
+    }
+
     private byte getNextByte(byte[] data, int jump) {
         StringBuilder buffer = new StringBuilder();
         for (int j = 0; j < 8; j++) {
